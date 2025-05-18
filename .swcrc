@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json.schemastore.org/swcrc",
+  "sourceMaps": true,
+  "jsc": {
+    "parser": {
+      "syntax": "typescript",
+      "decorators": true,
+      "dynamicImport": true
+    },
+    "baseUrl": "./",
+    "paths": {
+      "@app": ["src/app.ts"],
+      "@core/*": ["src/core/*"],
+      "@components/*": ["src/components/*"],
+      "@config/*": ["src/config/*"]
+    },
+    "target": "esnext"
+  },
+  "module": {
+    "type": "es6",
+    "resolveFully": true
+  },
+  "minify": false
+}

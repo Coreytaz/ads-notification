@@ -1,0 +1,66 @@
+{
+  "name": "template-express-5",
+  "version": "1.0.0",
+  "description": "template express version 5",
+  "keywords": [
+    "express",
+    "typescript",
+    "template"
+  ],
+  "exports": "./src/server.ts",
+  "scripts": {
+    "build": "node --run validate-typescript && node --run generate-dist",
+    "server:prod": "dotenv -e .env -- node dist/server.js",
+    "server:dev": "nodemon",
+    "lint": "eslint . --ext .js,.mjs,cjs,.ts,.mts",
+    "lint:fix": "eslint . --ext .js,.mjs,cjs,.ts,.mts --fix",
+    "lint:file": "eslint",
+    "generate-dist": "swc ./src -d dist --strip-leading-paths",
+    "validate-typescript": "tsc -p tsconfig.prod.json",
+    "loglevel:change": "runtime-node-refresh"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=9.0.0"
+  },
+  "dependencies": {
+    "cors": "2.8.5",
+    "express": "5.1.0",
+    "express-http-context": "2.0.1",
+    "http-status-codes": "2.3.0",
+    "joi": "17.13.3",
+    "morgan": "1.10.0",
+    "runtime-node-refresh": "1.0.7",
+    "uuid": "11.1.0",
+    "winston": "3.17.0"
+  },
+  "devDependencies": {
+    "@swc/cli": "0.7.7",
+    "@swc/core": "1.11.24",
+    "@types/cors": "2.8.18",
+    "@types/express": "5.0.2",
+    "@types/morgan": "1.9.9",
+    "@types/node": "22.15.18",
+    "@typescript-eslint/eslint-plugin": "8.32.1",
+    "@typescript-eslint/parser": "8.32.1",
+    "eslint": "9.27.0",
+    "eslint-config-prettier": "10.1.5",
+    "eslint-plugin-node": "11.1.0",
+    "eslint-plugin-prettier": "5.4.0",
+    "eslint-plugin-simple-import-sort": "12.1.1",
+    "eslint-plugin-unicorn": "59.0.1",
+    "globals": "16.1.0",
+    "nodemon": "3.1.10",
+    "prettier": "3.5.3",
+    "tsx": "4.19.4",
+    "typescript": "5.8.3",
+    "unplugin-swc": "1.5.3"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "4.41.0",
+    "@swc/core-linux-arm64-musl": "1.11.25-nightly-20250505.1",
+    "@swc/core-linux-x64-gnu": "1.11.25-nightly-20250505.1",
+    "@swc/core-linux-x64-musl": "1.11.25-nightly-20250505.1"
+  }
+}

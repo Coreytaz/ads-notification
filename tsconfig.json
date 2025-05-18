@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "module": "esnext",
+    "target": "esnext",
+    "moduleResolution": "Bundler",
+    "esModuleInterop": true,
+    "strict": true,
+    "outDir": "./dist",
+    "sourceMap": true,
+    "inlineSources": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "paths": {
+      "@app": ["src/app.ts"],
+      "@core/*": ["src/core/*"],
+      "@components/*": ["src/components/*"],
+      "@config/*": ["src/config/*"]
+    },
+  },
+  "exclude": ["node_modules", "dist"]
+}
