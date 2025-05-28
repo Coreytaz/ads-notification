@@ -44,3 +44,5 @@ public/
 
 .env
 .env.development
+
+local.db

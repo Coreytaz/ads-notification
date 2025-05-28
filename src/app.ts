@@ -1,6 +1,8 @@
 import http404 from "@components/404/404.router";
 import consts from "@config/consts";
+import { runInitialSeeders } from "@core/db/utils/runInitialSeeders";
 import uniqueReqId from "@core/middlewares/uniqueReqId.middleware";
+import { browser } from "@core/puppeteer";
 import httpLogger from "@core/utils/httpLogger";
 import cors from "cors";
 import express, { Application } from "express";
@@ -27,5 +29,13 @@ app.use(
     allowedHeaders: "Content-Type, Authorization",
   }),
 );
+
+// seeders
+await runInitialSeeders()
+//
+
+// puppeteer
+void browser.Init()
+//
 
 export default app;

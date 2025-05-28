@@ -1,4 +1,4 @@
- 
+
 import Joi from "joi";
 
 // All env variables used by the app should be defined in this file.
@@ -14,6 +14,7 @@ const envsSchema = Joi.object()
   .keys({
     NODE_ENV: Joi.string().valid("production", "development").required(),
     PORT: Joi.number().default(8080),
+    DB_CONNECT: Joi.string().default("file:local.db"),
   })
   .unknown(true);
 
@@ -33,4 +34,5 @@ export default {
   isDev: envVars.NODE_ENV === "development",
   env: envVars.NODE_ENV,
   port: envVars.PORT,
+  dbConnect: envVars.DB_CONNECT,
 };
