@@ -1,9 +1,17 @@
+import { drizzle } from "@core/db";
 import { link } from "@core/db/models";
 import { browser } from "@core/puppeteer";
 import { convertPriceToNumber } from "@core/utils/convertPriceToNumber";
 import { isHouseNumber } from "@core/utils/isHouseNumber";
 import logger from "@core/utils/logger";
 import { removeAddressKeywords } from "@core/utils/removeAddressKeywords";
+import { eq } from "drizzle-orm";
+
+import {
+  ComparisonResult,
+  LinkCheckData,
+  LinkMapResult,
+} from "./link-check.interface";
 
 function removeSaleWord(text: string): string {
   const hasSaleWord =
@@ -22,23 +30,25 @@ function removeSaleWord(text: string): string {
     .trim();
 }
 
-function compareObjects(
-  obj1: Record<string, unknown>,
-  obj2: Record<string, unknown>,
-) {
-  let isEqual = true;
+function compareObjects<
+  T1 extends Record<string, unknown>,
+  T2 extends Record<string, unknown>,
+>(obj1: T1, obj2: T2): ComparisonResult<T1 & T2> {
+  const result: ComparisonResult<T1 & T2> = {
+    isEqual: true,
+    differences: {} as T1 & T2,
+  };
 
   const allKeys = new Set([...Object.keys(obj1), ...Object.keys(obj2)]);
 
   for (const key of allKeys) {
     if (obj1[key] !== obj2[key]) {
-      console.log(key, "is different:", obj1[key], "vs", obj2[key]);
-      isEqual = false;
-      break;
+      result.isEqual = false;
+      (result.differences as Record<string, unknown>)[key] = obj1[key];
     }
   }
 
-  return isEqual;
+  return result;
 }
 
 const linkCian = async (config: typeof link.$inferSelect) => {
@@ -261,23 +271,13 @@ const linkCian = async (config: typeof link.$inferSelect) => {
     smallDescription: config.small_description,
   };
 
-  const isEqual = compareObjects(newData, dbData);
+  const { isEqual, differences } = compareObjects(newData, dbData);
 
   if (isEqual) {
     return null;
   }
 
-  return {
-    title,
-    square,
-    floor,
-    maxFloor,
-    price,
-    house,
-    street,
-    sellerName,
-    smallDescription,
-  };
+  return differences;
 };
 
 const mapAds = {
@@ -285,7 +285,7 @@ const mapAds = {
 };
 
 const checkNewInfo = async (links: (typeof link.$inferSelect)[]) => {
-  const newLinksIds = [];
+  const newLinksIds: LinkCheckData[] = [];
 
   for (const linkItem of links) {
     const url = linkItem.url;
@@ -312,14 +312,37 @@ const checkNewInfo = async (links: (typeof link.$inferSelect)[]) => {
       throw new Error("Domain not supported");
     }
 
-    const newLinkItem = await callback(linkItem);
+    const newLinkItem = (await callback(linkItem)) as LinkCheckData | null;
 
     if (newLinkItem === null) continue;
 
-    newLinksIds.push(linkItem.id);
+    newLinksIds.push({ ...newLinkItem, id: linkItem.id });
   }
 
   return newLinksIds;
 };
 
-export { checkNewInfo };
+const mapLinkCheckData = (linkData: LinkCheckData): LinkMapResult => {
+  return {
+    id: linkData.id,
+    title: linkData.title ?? undefined,
+    square: linkData.square ?? undefined,
+    floor: linkData.floor ?? undefined,
+    floor_count: linkData.maxFloor ?? undefined,
+    price: linkData.price ?? undefined,
+    house: linkData.house ?? undefined,
+    address: linkData.street ?? undefined,
+    seller_name: linkData.sellerName ?? undefined,
+    small_description: linkData.smallDescription ?? undefined,
+  };
+};
+
+const updateLinks = async (links: LinkMapResult[]): Promise<void> => {
+  await drizzle.transaction(async tx => {
+    for (const itemLink of links) {
+      await tx.update(link).set(itemLink).where(eq(link.id, itemLink.id));
+    }
+  });
+};
+
+export { checkNewInfo, mapLinkCheckData, updateLinks };

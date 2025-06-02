@@ -2,30 +2,33 @@ import { getAllEnableWatchLink, getLinkIds, reduceIds } from "@core/db/models";
 import { browser as _browser } from "@core/puppeteer";
 import AppError from "@core/utils/appError";
 import { groupBy } from "@core/utils/groupBy";
-import logger from "@core/utils/logger";
 import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 
-import { checkNewInfo } from "./link-check.service";
+import {
+  checkNewInfo,
+  mapLinkCheckData,
+  updateLinks,
+} from "./link-check.service";
 
 const linkCheck = async () => {
-  try {
-    const watchLinks = await getAllEnableWatchLink();
+  const watchLinks = await getAllEnableWatchLink();
 
-    const idsLink = watchLinks.map(link => link.linkId);
+  const idsLink = watchLinks.map(link => link.linkId);
 
-    const links = await getLinkIds(idsLink);
+  const links = await getLinkIds(idsLink);
 
-    const newLinkIds = await checkNewInfo(links);
+  const newLinks = await checkNewInfo(links);
 
-    // const linksReduce = reduceIds(links);
+  const mapLinks = newLinks.map(mapLinkCheckData);
 
-    // const groupWatchLinks = groupBy(watchLinks, "chatId");
+  await updateLinks(mapLinks);
 
-    return { newLinkIds };
-  } catch (error) {
-    logger.info("Error in linkCheck:", error);
-  }
+  const linksReduce = reduceIds(mapLinks);
+
+  const groupWatchLinks = groupBy(watchLinks, "chatId");
+
+  return { mapLinks, linksReduce, groupWatchLinks };
 };
 
 const linkCheckGet = async (
