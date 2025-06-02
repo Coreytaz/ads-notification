@@ -1,4 +1,4 @@
-import { relations } from "drizzle-orm";
+import { eq, relations } from "drizzle-orm";
 import { int, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 import { drizzle } from "../drizzle";
@@ -19,6 +19,14 @@ export const trackedLinks = sqliteTable("tracked_links", {
 
 export const getAllTrackedLinks = () => {
   return drizzle.select().from(trackedLinks).all();
+};
+
+export const getTrackedLinkById = (id: number) => {
+  return drizzle
+    .select()
+    .from(trackedLinks)
+    .where(eq(trackedLinks.id, id))
+    .get();
 };
 
 export const trackedLinksRelations = relations(

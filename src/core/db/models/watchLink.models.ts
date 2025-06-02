@@ -1,6 +1,7 @@
-import { relations } from "drizzle-orm";
+import { eq, relations } from "drizzle-orm";
 import { int, sqliteTable } from "drizzle-orm/sqlite-core";
 
+import { drizzle } from "../drizzle";
 import { chatTG } from "./chatTG.models";
 import { link } from "./link.models";
 
@@ -14,6 +15,10 @@ export const watchLink = sqliteTable("watch_link", {
     .notNull(),
   enable: int("enable").notNull().default(1),
 });
+
+export const getAllEnableWatchLink = () => {
+  return drizzle.select().from(watchLink).where(eq(watchLink.enable, 1)).all();
+};
 
 export const watchLinkRelations = relations(watchLink, ({ one }) => ({
   linkId: one(link, {

@@ -1,31 +1,28 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { drizzle } from "@core/db";
 import { link, trackedLinks } from "@core/db/models";
 import { browser } from "@core/puppeteer";
 import { compareDates, parseRussianDate } from "@core/utils/compareDates";
+import { convertPriceToNumber } from "@core/utils/convertPriceToNumber";
+import { isHouseNumber } from "@core/utils/isHouseNumber";
 import logger from "@core/utils/logger";
+import { removeAddressKeywords } from "@core/utils/removeAddressKeywords";
+import crypto from "crypto";
 import { and, eq, inArray } from "drizzle-orm";
-import md5 from "md5";
 import * as puppeteer from "puppeteer";
 
 import { AdsCheck } from "./ads-check.interface";
 
-const getTrackedLinksById = async (id: number) => {
-  return await drizzle
-    .select()
-    .from(trackedLinks)
-    .where(eq(trackedLinks.id, id))
-    .get();
-};
-
 const openPage = async (url: string) => {
   const page = await browser.CreatePage();
-  await page.goto(url, { waitUntil: "networkidle2" });
+  await page.goto(url, { waitUntil: "domcontentloaded" });
   return page;
 };
 
-const generateHash = (str: Omit<AdsCheck, "hash" | "datePublished">) => {
-  return md5(JSON.stringify(str));
+const generateHash = (
+  obj: Omit<AdsCheck, "hash" | "datePublished" | "url">,
+) => {
+  const str = JSON.stringify(obj, Object.keys(obj).sort());
+  return crypto.createHash("sha256").update(str).digest("hex");
 };
 
 const itemAdsAvito = async (
@@ -128,7 +125,6 @@ const itemAdsAvito = async (
     street,
     price,
     house,
-    url,
   });
 
   return {
@@ -145,6 +141,17 @@ const itemAdsAvito = async (
     datePublished,
     hash,
   };
+};
+
+const checkTitleText = (titleText: string[]) => {
+  if (
+    titleText.length === 3 &&
+    titleText[1].includes("м²") &&
+    titleText[2].includes("/")
+  ) {
+    return true;
+  }
+  return false;
 };
 
 const itemAdsCian = async (
@@ -168,37 +175,62 @@ const itemAdsCian = async (
 
   const datePublished = parseRussianDate(datePublishedStr).toSQL();
 
-  const titleText = await item.$eval(
-    'span[data-mark="OfferTitle"]>span',
-    el => el.textContent,
-  );
+  let titleText =
+    (await item
+      .$eval('span[data-mark="OfferTitle"]>span', el => el.textContent)
+      .catch((e: unknown) => {
+        logger.info(e);
+        return null;
+      })) ?? null;
 
-  const [title = null, square = null, floorText] = (titleText ?? "").split(
-    ", ",
-  );
+  let splitTitleText = titleText?.split(", ") ?? [];
+
+  if (!checkTitleText(splitTitleText)) {
+    titleText = await item
+      .$eval('span[data-mark="OfferSubtitle"]', el => el.textContent)
+      .catch((e: unknown) => {
+        logger.info(e);
+        return null;
+      });
+    splitTitleText = titleText?.split(", ") ?? [];
+  }
+
+  const [title = null, square = null, floorText] = splitTitleText;
 
   const [floor, maxFloor] = floorText
     ? floorText.split(" ")[0].split("/")
     : [null, null];
 
   const smallDescription = await item
-    .$eval('div[data-name="Description"]>p', el => el.textContent)
+    .waitForSelector('div[data-name="Description"]>p', { timeout: 30000 })
+    .then(el => el?.evaluate(el => el.textContent) ?? null)
     .catch((e: unknown) => {
       logger.info(e);
       return null;
     });
 
-  let sellerName = await item
-    .$eval(
-      'div[data-name="BrandingLevelWrapper"]>div>div~div>div>div>div>a>span',
-      el => el.textContent,
-    )
-    .catch((e: unknown) => {
-      logger.info(e);
-      return null;
-    });
+  let sellerName =
+    (await item
+      .$eval(
+        'div[data-name="BrandingLevelWrapper"]>div>div~div>div>div>div>a>span',
+        el => el.textContent,
+      )
+      .catch((e: unknown) => {
+        logger.info(e);
+        return null;
+      })) ??
+    (await item
+      .$eval(
+        'div[data-name="BrandingLevelWrapper"]>div>div~div>div>div>div>span',
+        el => el.textContent,
+      )
+      .catch((e: unknown) => {
+        logger.info(e);
+        return null;
+      })) ??
+    null;
 
-  const price =
+  const priceText =
     (await item
       .$eval('span[data-mark="MainPrice"]>span', el => el.textContent)
       .catch((e: unknown) => {
@@ -216,17 +248,57 @@ const itemAdsCian = async (
       })) ??
     null;
 
+  const price = convertPriceToNumber(priceText);
+
   const locationSelectors = await item.$$('a[data-name="GeoLabel"]');
 
-  const streetElement = locationSelectors.at(-2);
+  const houseElement = locationSelectors.at(-1);
 
-  const street = streetElement
-    ? await streetElement.evaluate(el => el.textContent)
+  const houseText = houseElement
+    ? await houseElement.evaluate(el => el.textContent)
     : null;
 
-  const houseElement = locationSelectors.at(-1);
-  const house = houseElement
-    ? await houseElement.evaluate(el => el.textContent)
+  const house = isHouseNumber(houseText) ? houseText : null;
+
+  const streetElement = locationSelectors.at(house === null ? -1 : -2);
+
+  const street = streetElement
+    ? await streetElement
+        .evaluate(el => el.textContent)
+        .then(text =>
+          text
+            ? removeAddressKeywords(text.toLocaleLowerCase(), [
+                { regex: /(^|\s|\.|,)улица(\p{L}+)/giu, replace: "$1$2" },
+                {
+                  regex: /(^|\s|\.|,)улица\s+([^,]+?)(\s|$|,|\.)/gi,
+                  replace: "$1$2$3",
+                },
+                {
+                  regex: /(^|\s)(\p{L}+)\sбульвар(\s|$|,|\.)/giu,
+                  replace: "$1$2$3",
+                },
+                {
+                  regex: /(^|\s)(\p{L}+)\sмикрорайон(\s|$|,|\.)/giu,
+                  replace: "$1$2$3",
+                },
+                {
+                  regex: /(^|\s)(\p{L}+)\sпроспект(\s|$|,|\.)/giu,
+                  replace: "$1$2$3",
+                },
+                {
+                  regex: /(^|\s)(\p{L}+)\sшоссе(\s|$|,|\.)/giu,
+                  replace: "$1$2$3",
+                },
+                {
+                  regex: /(^|\s)(\p{L}+)\sнабережная(\s|$|,|\.)/giu,
+                  replace: "$1$2$3",
+                },
+                { regex: /(\p{L}+)(\sулица)(\s|$|,|\.)/giu, replace: "$1$3" },
+                { regex: /(^|\s|\.|,)жк(\p{L}+)/giu, replace: "$1$2" },
+                { regex: /(\p{L}+)(\sжк)(\s|$|,|\.)/giu, replace: "$1$3" },
+              ])
+            : null,
+        )
     : null;
 
   const url = await item.$eval('div[data-testid="offer-card"]>a', el =>
@@ -243,7 +315,6 @@ const itemAdsCian = async (
     street,
     price,
     house,
-    url,
   });
 
   return {
@@ -352,6 +423,8 @@ const checkIncludedLinks = async (
   ads: AdsCheck[],
   config: typeof trackedLinks.$inferSelect,
 ) => {
+  if (ads.length === 0) return [];
+
   const { id } = config;
 
   const existingLinks = await drizzle
@@ -377,6 +450,8 @@ const createLinks = async (
   ads: AdsCheck[],
   config: typeof trackedLinks.$inferSelect,
 ) => {
+  if (ads.length === 0) return [];
+
   const { id } = config;
 
   const links = ads.map(ad => ({
@@ -400,10 +475,4 @@ const createLinks = async (
   return links;
 };
 
-export {
-  checkAds,
-  checkIncludedLinks,
-  createLinks,
-  getTrackedLinksById,
-  openPage,
-};
+export { checkAds, checkIncludedLinks, createLinks, generateHash, openPage };

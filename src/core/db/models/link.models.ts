@@ -1,6 +1,7 @@
-import { relations } from "drizzle-orm";
+import { inArray, relations } from "drizzle-orm";
 import { int, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
+import { drizzle } from "../drizzle";
 import { timestamps } from "../utils/timestamps.helpers";
 import { trackedLinks } from "./trackedLinks.models";
 
@@ -12,12 +13,13 @@ export const link = sqliteTable("link", {
   price: text("price"),
   square: text("square"),
   address: text("address"),
+  house: text("house"),
   seller_name: text("seller_name"),
   small_description: text("small_description"),
   floor: text("floor"),
   floor_count: text("floor_count"),
   date_published: text("date_published"),
-  hash: text("content_hash").notNull(),
+  hash: text("content_hash").notNull().unique(),
   ...timestamps,
 });
 
@@ -27,3 +29,14 @@ export const linkRelations = relations(link, ({ one }) => ({
     references: [trackedLinks.id],
   }),
 }));
+
+export const reduceIds = <T extends { id: number }>(links: T[]): Record<string, T> => {
+  return links.reduce<Record<string, T>>((acc, link) => {
+    acc[String(link.id)] = link;
+    return acc;
+  }, {});
+};
+
+export const getLinkIds = (linkIds: number[]) => {
+  return drizzle.select().from(link).where(inArray(link.id, linkIds)).all();
+};

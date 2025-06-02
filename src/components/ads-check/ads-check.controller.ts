@@ -1,4 +1,4 @@
-import { trackedLinks } from "@core/db/models";
+import { getTrackedLinkById, trackedLinks } from "@core/db/models";
 import { browser as _browser } from "@core/puppeteer";
 import AppError from "@core/utils/appError";
 import { NextFunction, Request, Response } from "express";
@@ -8,7 +8,6 @@ import {
   checkAds,
   checkIncludedLinks,
   createLinks,
-  getTrackedLinksById,
   openPage,
 } from "./ads-check.service";
 
@@ -26,7 +25,7 @@ export const adsCheck = async (config: typeof trackedLinks.$inferSelect) => {
 
 const adsCheckGet = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const config = await getTrackedLinksById(1);
+    const config = await getTrackedLinkById(2);
 
     if (!config) throw new Error("Tracked link not found");
 
