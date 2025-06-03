@@ -1,6 +1,6 @@
 import { get } from "./get";
 
-type GroupedResult<T> = Record<string | number | symbol, T[]>;
+export type GroupedResult<T> = Record<string | number | symbol, T[]>;
 
 export const groupBy = <T>(
     xs: readonly T[],

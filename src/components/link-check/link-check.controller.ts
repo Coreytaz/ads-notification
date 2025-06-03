@@ -8,13 +8,14 @@ import { StatusCodes } from "http-status-codes";
 import {
   checkNewInfo,
   mapLinkCheckData,
+  sendNotifications,
   updateLinks,
 } from "./link-check.service";
 
 const linkCheck = async () => {
   const watchLinks = await getAllEnableWatchLink();
 
-  const idsLink = watchLinks.map(link => link.linkId);
+  const idsLink = [...new Set(watchLinks.map(link => link.linkId))];
 
   const links = await getLinkIds(idsLink);
 
@@ -26,9 +27,11 @@ const linkCheck = async () => {
 
   const linksReduce = reduceIds(mapLinks);
 
-  const groupWatchLinks = groupBy(watchLinks, "chatId");
+  const groupWatchChatId = groupBy(watchLinks, "chatId");
 
-  return { mapLinks, linksReduce, groupWatchLinks };
+  sendNotifications(groupWatchChatId, linksReduce);
+
+  return { mapLinks, linksReduce, groupWatchChatId };
 };
 
 const linkCheckGet = async (

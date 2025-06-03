@@ -2,6 +2,7 @@ import { drizzle } from "@core/db";
 import { link } from "@core/db/models";
 import { browser } from "@core/puppeteer";
 import { convertPriceToNumber } from "@core/utils/convertPriceToNumber";
+import type { GroupedResult } from "@core/utils/groupBy";
 import { isHouseNumber } from "@core/utils/isHouseNumber";
 import logger from "@core/utils/logger";
 import { removeAddressKeywords } from "@core/utils/removeAddressKeywords";
@@ -345,4 +346,24 @@ const updateLinks = async (links: LinkMapResult[]): Promise<void> => {
   });
 };
 
-export { checkNewInfo, mapLinkCheckData, updateLinks };
+const sendNotifications = (
+  chatsId: GroupedResult<{
+    id: number;
+    linkId: number;
+    chatId: number;
+    enable: number;
+  }>,
+  links: Record<string, LinkMapResult>,
+) => {
+  Object.entries(chatsId).forEach(([chatId, watchLink]) => {
+    const idsLink = watchLink.map(item => item.linkId);
+    const linksToNotify = idsLink.map(id => links[id]).filter(Boolean);
+    sendNotification(linksToNotify, chatId);
+  });
+};
+
+const sendNotification = (links: LinkMapResult[], chatId: string) => {
+  console.log(`Sending notification to chat ${chatId} with links:`, links);
+};
+
+export { checkNewInfo, mapLinkCheckData, sendNotifications, updateLinks };
