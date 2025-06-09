@@ -1,0 +1,1 @@
+export type IdentifyKeys = "isCallback" | "isCmd" | "isMsg" | 'isKeyboard'

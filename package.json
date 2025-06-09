@@ -25,12 +25,17 @@
     "npm": ">=9.0.0"
   },
   "dependencies": {
-    "@libsql/client": "0.15.8",
+    "@grammyjs/commands": "1.0.8",
+    "@grammyjs/parse-mode": "2.1.2",
+    "@grammyjs/runner": "2.0.3",
+    "@libsql/client": "0.15.9",
     "cors": "2.8.5",
     "cron": "4.3.1",
-    "drizzle-orm": "0.44.1",
+    "drizzle-orm": "0.44.2",
     "express": "5.1.0",
     "express-http-context": "2.0.1",
+    "grammy": "1.36.3",
+    "grammy-middlewares": "1.0.11",
     "http-status-codes": "2.3.0",
     "joi": "17.13.3",
     "luxon": "3.6.1",
@@ -46,12 +51,12 @@
   },
   "devDependencies": {
     "@swc/cli": "0.7.7",
-    "@swc/core": "1.11.29",
-    "@types/cors": "2.8.18",
-    "@types/express": "5.0.2",
+    "@swc/core": "1.11.31",
+    "@types/cors": "2.8.19",
+    "@types/express": "5.0.3",
     "@types/luxon": "3.6.2",
-    "@types/morgan": "1.9.9",
-    "@types/node": "22.15.29",
+    "@types/morgan": "1.9.10",
+    "@types/node": "22.15.30",
     "@typescript-eslint/eslint-plugin": "8.33.1",
     "@typescript-eslint/parser": "8.33.1",
     "drizzle-kit": "0.31.1",
@@ -69,9 +74,9 @@
     "unplugin-swc": "1.5.4"
   },
   "optionalDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "4.41.1",
-    "@swc/core-linux-arm64-musl": "1.11.29",
-    "@swc/core-linux-x64-gnu": "1.11.29",
-    "@swc/core-linux-x64-musl": "1.11.29"
+    "@rollup/rollup-linux-x64-gnu": "4.42.0",
+    "@swc/core-linux-arm64-musl": "1.11.31",
+    "@swc/core-linux-x64-gnu": "1.11.31",
+    "@swc/core-linux-x64-musl": "1.11.31"
   }
 }

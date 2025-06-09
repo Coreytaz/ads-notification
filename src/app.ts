@@ -1,5 +1,6 @@
 import http404 from "@components/404/404.router";
 import consts from "@config/consts";
+import { runBot } from "@core/bot/bot";
 import { runInitialSeeders } from "@core/db/utils/runInitialSeeders";
 import uniqueReqId from "@core/middlewares/uniqueReqId.middleware";
 import { browser } from "@core/puppeteer";
@@ -31,11 +32,15 @@ app.use(
 );
 
 // seeders
-await runInitialSeeders()
+await runInitialSeeders();
 //
 
 // puppeteer
-void browser.Init()
+void browser.Init();
+//
+
+// tg bot
+void runBot();
 //
 
 export default app;

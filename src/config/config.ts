@@ -14,6 +14,7 @@ const envsSchema = Joi.object()
   .keys({
     NODE_ENV: Joi.string().valid("production", "development").required(),
     PORT: Joi.number().default(8080),
+    TG_BOT_TOKEN: Joi.string().required(),
     DB_CONNECT: Joi.string().default("file:local.db"),
   })
   .unknown(true);
@@ -34,5 +35,6 @@ export default {
   isDev: envVars.NODE_ENV === "development",
   env: envVars.NODE_ENV,
   port: envVars.PORT,
+  tgBotToken: envVars.TG_BOT_TOKEN,
   dbConnect: envVars.DB_CONNECT,
 };

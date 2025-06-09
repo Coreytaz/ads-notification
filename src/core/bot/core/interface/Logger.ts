@@ -1,0 +1,1 @@
+export type TypeLogger = "info" | "warn" | "error" | "debug"

@@ -1,5 +1,12 @@
-export { chatTG } from "./chatTG.models";
+export * from "./activationKeyTG.models";
+export * from "./chatReplyTG.models";
+export * from "./chatTG.models";
 export * from "./link.models";
-export { role } from "./role.models";
+export * from "./paramsTG.models";
+export * from "./permissionRule.models";
+export * from "./permissions.models";
+export * from "./role.models";
+export * from "./rule.models";
 export * from "./trackedLinks.models";
+export * from "./typeTG.models";
 export * from "./watchLink.models";
