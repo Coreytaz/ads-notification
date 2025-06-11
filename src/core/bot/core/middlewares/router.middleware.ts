@@ -9,12 +9,14 @@ import update from "./update.middleware.js";
 
 export default async function router(ctx: Context, next: NextFunction) {
   try {
-    // if (await ctx.step.isActive()) {
-    //   const step = await ctx.step.findStep();
-    //   if (step) {
-    //     ctx[step.type] = true;
-    //   }
-    // }
+    if (await ctx.step.isActive()) {
+      const step = await ctx.step.findStep();
+      if (step) {
+        if (typeof step.type === "string") {
+          ctx[step.type] = true;
+        }
+      }
+    }
     if (ctx.isCallback) {
       await update(ctx, next);
       return;

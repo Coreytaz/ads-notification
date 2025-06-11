@@ -1,9 +1,9 @@
 import {
   bold,
   code,
-  EntityTag,
   expandableBlockquote,
   fmt,
+  FormattedString,
   italic,
   pre,
   spoiler,
@@ -19,7 +19,8 @@ import {
 
 const mapOptions: Record<
   keyof ParseObjectToHTMLOptions,
-  (() => EntityTag) | ((language: string) => EntityTag)
+  | ((stringLike: Stringable) => FormattedString)
+  | ((stringLike: Stringable, language: string) => FormattedString)
 > = {
   bold,
   italic,
@@ -34,8 +35,7 @@ const mapOptions: Record<
 const applyOptions = (value: Stringable, options: ParseObjectToHTMLOptions) => {
   return Object.entries(options).reduce((acc, [key, val]) => {
     if (val) {
-      const option = mapOptions[key as keyof ParseObjectToHTMLOptions];
-      return fmt`${option}${acc}${option}`;
+      return mapOptions[key as keyof ParseObjectToHTMLOptions](acc, "");
     }
     return acc;
   }, value);
@@ -44,12 +44,11 @@ const applyOptions = (value: Stringable, options: ParseObjectToHTMLOptions) => {
 export const parseObjectToHTML = (
   obj: Record<string, ParseObjectToHTMLValue | undefined>,
 ) => {
-  return fmt`
-    ${Object.values(obj).reduce((acc, value) => {
-      if (!value) {
-        return acc;
-      }
-      return `${acc}${String(fmt`${value.title}: ${applyOptions(value.value, value.options ?? {})}${value.separator?.() ?? "\n"}`)}`;
-    }, "")}
-  `;
+  return fmt(
+    [],
+    ...Object.values(obj).map(value => {
+      if (!value) return "";
+      return fmt`${value.title}: ${applyOptions(value.value, value.options ?? {})}${value.separator?.() ?? "\n"}`;
+    }),
+  );
 };

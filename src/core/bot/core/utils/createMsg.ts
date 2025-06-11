@@ -1,11 +1,11 @@
-import { b, fmt, FormattedString } from "@grammyjs/parse-mode";
+import { bold, fmt, FormattedString } from "@grammyjs/parse-mode";
 
-import { TypeLogger } from "../interface/Logger";
-import { semiSeparator } from "./SemiSeparator";
+import type { TypeLogger } from "../interface/Logger";
+import { semiSeparator } from "./semiSeparator";
 
 export const createMsg = (
   type: TypeLogger,
   message: string | FormattedString,
 ) => {
-  return fmt`${semiSeparator} ${b}${type.toUpperCase()}${b} ${semiSeparator}\n${message}`;
+  return fmt`${semiSeparator} ${bold(type.toUpperCase())} ${semiSeparator}\n${message}`;
 };

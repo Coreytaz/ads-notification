@@ -4,7 +4,6 @@ import { chatTG } from "@core/db/models";
 import logger from "@core/utils/logger";
 import { FormattedString } from "@grammyjs/parse-mode";
 import { eq } from "drizzle-orm";
-import { RawApi } from "grammy";
 
 import bot from "../core";
 import { TypeLogger } from "../interface/Logger";
@@ -15,7 +14,7 @@ class LoggerTG {
   private async message(
     type: TypeLogger,
     message: string | FormattedString,
-    _other?: Other<RawApi, "sendMessage", "chat_id" | "text">,
+    _other?: Other<"sendMessage", "chat_id" | "text">,
   ) {
     const chats = await drizzle
       .select()
@@ -38,7 +37,7 @@ class LoggerTG {
 
   public async debug(
     message: string | FormattedString,
-    other?: Other<RawApi, "sendMessage", "chat_id" | "text">,
+    other?: Other<"sendMessage", "chat_id" | "text">,
   ) {
     if (config.isDev) {
       await this.message("debug", message, other);
@@ -47,14 +46,14 @@ class LoggerTG {
 
   public async info(
     message: string | FormattedString,
-    other?: Other<RawApi, "sendMessage", "chat_id" | "text">,
+    other?: Other<"sendMessage", "chat_id" | "text">,
   ) {
     await this.message("info", message, other);
   }
 
   public async error(
     message: string | FormattedString,
-    other?: Other<RawApi, "sendMessage", "chat_id" | "text">,
+    other?: Other<"sendMessage", "chat_id" | "text">,
   ) {
     await this.message("error", message, other);
   }

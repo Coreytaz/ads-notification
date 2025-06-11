@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "@grammyjs/commands": "1.0.8",
-    "@grammyjs/parse-mode": "2.1.2",
+    "@grammyjs/parse-mode": "1.11.1",
     "@grammyjs/runner": "2.0.3",
     "@libsql/client": "0.15.9",
     "cors": "2.8.5",

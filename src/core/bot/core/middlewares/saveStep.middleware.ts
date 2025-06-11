@@ -63,6 +63,7 @@ const saveStep = async (
 };
 
 const findStep = async (ctx: Context) => {
+  console.log(ctx.editAndReply);
   return await drizzle
     .select()
     .from(chatStep)
@@ -131,6 +132,7 @@ const saveStepContext = (ctx: Context): ContextWithStep["step"] => {
       if (checkStep(_step)) return _step.enable === 1;
       const step = await findStep(ctx);
       _step = step ?? null;
+      console.log("step", step?.enable === 1);
       return step?.enable === 1;
     },
   };
