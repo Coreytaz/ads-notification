@@ -7,8 +7,19 @@ export const menuButton = {
   },
   categories: {
     add: { data: "categories/add", label: "Добавить категорию" },
-    list: { data: "categories/list", label: "Список категорий" },
+    list: { data: "categories/list", label: "Список ваших категорий" },
+    sharedList: {
+      data: "categories/sharedList",
+      label: "Совместный список категорий",
+    },
     back: { data: "categories/back", label: "Назад" },
+  },
+  detailShared: {
+    detail: { data: "detailShared/detail" },
+    back: { data: "detailShared/back", label: "Назад" },
+  },
+  categoriesSharedList: {
+    back: { data: "categoriesSharedList/back", label: "Назад" },
   },
   categoriesAdd: {
     back: { data: "categories/add/back", label: "Назад" },

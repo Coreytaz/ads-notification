@@ -11,6 +11,7 @@ export const trackedLinks = sqliteTable("tracked_links", {
   id: int("id").primaryKey({ autoIncrement: true }),
   enable: int("enable").notNull().default(1),
   url: text("url").notNull().unique(),
+  title: text("title").notNull().default(""),
   cronTime: text("cron_time").notNull(),
   chatId: text("chat_id")
     .references(() => chatTG.chatId)
