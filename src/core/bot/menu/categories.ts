@@ -3,10 +3,10 @@ import { InlineKeyboard } from "grammy";
 import { Context } from "../core/interface/Context";
 import { menuButton } from "./menuButton.config";
 
-export const mainMenu = (ctx: Context) => {
+export const categoriesMenu = (ctx: Context) => {
   const mainMenu = new InlineKeyboard();
 
-  Object.values(menuButton.main).forEach(
+  Object.values(menuButton.categories).forEach(
     ({
       data,
       label,

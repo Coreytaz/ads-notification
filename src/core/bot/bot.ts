@@ -20,7 +20,7 @@ async function runBot() {
 
   bot
     .use(sequentialize())
-    .use(ignoreOld())
+    .use(ignoreOld(5 * 60 * 24))
     .use(commands())
 
     .use(typeCheck)

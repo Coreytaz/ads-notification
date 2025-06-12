@@ -33,23 +33,23 @@ const saveStep = async (
       type: getKeyType(ctx),
       ...context,
     },
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    messageId: ctx.editAndReply.messageId!,
+
+    chatId: String(ctx.chatId),
   };
 
   const existingStep = await drizzle
     .select()
     .from(chatStep)
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    .where(eq(chatStep.messageId, ctx.editAndReply.messageId!))
+
+    .where(eq(chatStep.chatId, String(ctx.chatId)))
     .get();
 
   if (existingStep) {
     await drizzle
       .update(chatStep)
       .set(stepData)
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      .where(eq(chatStep.messageId, ctx.editAndReply.messageId!))
+
+      .where(eq(chatStep.chatId, String(ctx.chatId)))
       .run();
     return { ...existingStep, ...stepData };
   } else {
@@ -63,20 +63,18 @@ const saveStep = async (
 };
 
 const findStep = async (ctx: Context) => {
-  console.log(ctx.editAndReply);
   return await drizzle
     .select()
     .from(chatStep)
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    .where(eq(chatStep.messageId, ctx.editAndReply.messageId!))
+
+    .where(eq(chatStep.chatId, String(ctx.chatId)))
     .get();
 };
 
 const deleteStep = async (ctx: Context) => {
   await drizzle
     .delete(chatStep)
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    .where(eq(chatStep.messageId, ctx.editAndReply.messageId!))
+    .where(eq(chatStep.chatId, String(ctx.chatId)))
     .run();
 };
 
@@ -112,8 +110,8 @@ const saveStepContext = (ctx: Context): ContextWithStep["step"] => {
         await drizzle
           .update(chatStep)
           .set({ enable: _step.enable })
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          .where(eq(chatStep.messageId, ctx.editAndReply.messageId!))
+
+          .where(eq(chatStep.chatId, String(ctx.chatId)))
           .run();
       } else {
         const step = await findStep(ctx);
@@ -122,8 +120,8 @@ const saveStepContext = (ctx: Context): ContextWithStep["step"] => {
           await drizzle
             .update(chatStep)
             .set({ enable: enable ? 1 : 0 })
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            .where(eq(chatStep.messageId, ctx.editAndReply.messageId!))
+
+            .where(eq(chatStep.chatId, String(ctx.chatId)))
             .run();
         }
       }
@@ -132,7 +130,6 @@ const saveStepContext = (ctx: Context): ContextWithStep["step"] => {
       if (checkStep(_step)) return _step.enable === 1;
       const step = await findStep(ctx);
       _step = step ?? null;
-      console.log("step", step?.enable === 1);
       return step?.enable === 1;
     },
   };

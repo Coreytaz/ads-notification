@@ -62,7 +62,7 @@ export default async function userCheck(ctx: Context, next: NextFunction) {
 
     ctx.chatDB = chat.chat;
     ctx.role = chat.role;
-    const roleId = chat.chat.id;
+    const roleId = chat.role.id;
 
     const permission = await drizzle.transaction(async tx => {
       const permissionResult = await tx

@@ -1,6 +1,9 @@
 import http404 from "@components/404/404.router";
 import consts from "@config/consts";
 import { runBot } from "@core/bot/bot";
+import { jobCleanOldChatReplyEditTG } from "@core/cron/jobCleanOldChatReplyEditTG";
+import { jobCleanOldParamTG } from "@core/cron/jobCleanOldParamTG";
+import { jobToggleOldStepTG } from "@core/cron/jobToggleOldStepTG";
 import { runInitialSeeders } from "@core/db/utils/runInitialSeeders";
 import uniqueReqId from "@core/middlewares/uniqueReqId.middleware";
 import { browser } from "@core/puppeteer";
@@ -41,6 +44,12 @@ void browser.Init();
 
 // tg bot
 void runBot();
+//
+
+// cron jobs
+jobCleanOldParamTG.start();
+jobToggleOldStepTG.start();
+jobCleanOldChatReplyEditTG.start();
 //
 
 export default app;

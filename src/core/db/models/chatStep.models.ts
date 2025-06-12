@@ -1,13 +1,13 @@
 import { int, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 import { timestamps } from "../utils/timestamps.helpers";
-import { chatReplyTG } from "./chatReplyTG.models";
+import { chatTG } from "./chatTG.models";
 
 export const chatStep = sqliteTable("chat_step", {
   id: int().primaryKey({ autoIncrement: true }),
-  messageId: int("message_id")
+  chatId: text("chat_id")
     .notNull()
-    .references(() => chatReplyTG.messageId),
+    .references(() => chatTG.chatId),
   enable: int().notNull().default(0),
   context: text("context", {
     mode: "json",

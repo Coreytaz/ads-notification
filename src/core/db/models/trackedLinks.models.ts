@@ -2,6 +2,7 @@ import { eq, relations } from "drizzle-orm";
 import { int, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 import { drizzle } from "../drizzle";
+import { createOne } from "../utils/createOne";
 import { timestamps } from "../utils/timestamps.helpers";
 import { chatTG } from "./chatTG.models";
 import { sharedLinks } from "./sharedLinks.models";
@@ -39,3 +40,9 @@ export const trackedLinksRelations = relations(
     sharedWith: many(sharedLinks),
   }),
 );
+
+export const createOneTrackedLinks = async (
+  args: Omit<typeof trackedLinks.$inferInsert, keyof typeof timestamps>,
+) => {
+  return createOne(trackedLinks)(args);
+};

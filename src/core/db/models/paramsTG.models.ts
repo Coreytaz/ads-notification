@@ -2,6 +2,7 @@ import { and, eq } from "drizzle-orm";
 import { int, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 import { drizzle } from "../drizzle";
+import { createOne } from "../utils/createOne";
 import { timestamps } from "../utils/timestamps.helpers";
 
 export const paramsTG = sqliteTable("params_tg", {
@@ -32,5 +33,5 @@ export const findOneParamsTG = async (
 export const createOneParamsTG = async (
   args: Omit<typeof paramsTG.$inferInsert, keyof typeof timestamps>,
 ) => {
-  return drizzle.insert(paramsTG).values(args).returning().get();
+  return createOne(paramsTG)(args);
 };

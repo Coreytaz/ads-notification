@@ -53,27 +53,19 @@ const create = async (ctx: Context, messageId: number) => {
 const editAndReplyContext = (
   ctx: Context,
 ): ContextWithEditAndReply["editAndReply"] => {
-  let messageId = getMessageId(ctx);
   return {
-    messageId,
     reply: async (text, options) => {
       const replyMsg = await find(ctx);
 
       if (isEmpty(replyMsg)) {
         const message = await ctx.reply(text, options);
-        const replyRecord = await create(ctx, message.message_id);
-        messageId = replyRecord.messageId;
+        await create(ctx, message.message_id);
         return message;
-      }
-
-      const _messageId = replyMsg?.messageId;
-      if (replyMsg) {
-        messageId = _messageId;
       }
 
       const editedMessage = await ctx.api.editMessageText(
         Number(ctx.chat?.id),
-        Number(_messageId),
+        Number(replyMsg?.messageId),
         text,
         options as Parameters<typeof ctx.api.editMessageText>[3],
       );
