@@ -1,3 +1,3 @@
-export const isCommand = (text: string) => {
-    return text.startsWith('/')
+export const isCommand = (text: string | undefined) => {
+    return text?.startsWith('/')
 }

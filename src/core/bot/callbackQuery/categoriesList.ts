@@ -31,9 +31,11 @@ export const categoriesList = async (ctx: Context) => {
 
     params.addParam("sharedLink", link.id);
 
+    const title = link.title || link.url || "Без названия";
+
     menu
       .text(
-        "ID:" + String(link.id) + " - (" + String(link.url.slice(0, 10)) + ")",
+        "ID:" + String(link.id) + " - (" + String(title.slice(0, 30)) + ")",
         params.toString(),
       )
       .row();
@@ -51,7 +53,7 @@ export const categoriesList = async (ctx: Context) => {
 
   await ctx.answerCallbackQuery();
 
-  await ctx.editAndReply.reply("Cписок категорий", {
+  await ctx.editAndReply.reply("Cписок ваших категорий", {
     reply_markup: menu,
   });
 };

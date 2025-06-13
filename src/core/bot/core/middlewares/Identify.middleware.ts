@@ -23,8 +23,7 @@ export default async function identify(ctx: Context, next: NextFunction) {
       await next();
       return;
     }
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
-    if (isCommand(ctx.message?.text!)) {
+    if (isCommand(ctx.message?.text)) {
       toggleContext(ctx, { isCmd: true });
       await next();
       return;
@@ -42,6 +41,6 @@ export default async function identify(ctx: Context, next: NextFunction) {
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    void loggerTG.info(`Error in Identify middleware: ${errorMessage}`);
+    void loggerTG.error(`Error in Identify middleware: ${errorMessage}`);
   }
 }

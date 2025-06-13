@@ -1,6 +1,7 @@
 import { int, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 import { timestamps } from "../utils/timestamps.helpers";
+import { updateOne } from "../utils/updateOne";
 import { chatTG } from "./chatTG.models";
 
 export const chatStep = sqliteTable("chat_step", {
@@ -23,3 +24,10 @@ export const chatStep = sqliteTable("chat_step", {
     .default({}),
   ...timestamps,
 });
+
+export const updateOneChatStep = async <T extends typeof chatStep>(
+  args: T["$inferInsert"],
+  where: Partial<T["$inferSelect"]>,
+) => {
+  return await updateOne(chatStep)(args, where);
+};
