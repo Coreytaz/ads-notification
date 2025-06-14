@@ -1,8 +1,9 @@
 // Permissions.models.ts
-import { relations } from "drizzle-orm";
+import { relations, SQLWrapper } from "drizzle-orm";
 import { sql } from "drizzle-orm"; // make sure sql is imported
 import { int, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
+import { getAll } from "../utils/getAll";
 import { chatTG } from "./chatTG.models";
 import { permissionRules } from "./permissionRule.models";
 import { role } from "./role.models";
@@ -35,3 +36,10 @@ export const permissionsRelations = relations(permissions, ({ one, many }) => ({
   permissionRules: many(permissionRules),
   rules: many(rules),
 }));
+
+export const getAllPermissions = async (
+  args: Partial<typeof role.$inferSelect>,
+  ...where: (SQLWrapper | undefined)[]
+) => {
+  return getAll(role)(args, ...where);
+};

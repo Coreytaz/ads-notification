@@ -25,6 +25,9 @@ export interface Context
 
   paramsExtractor?: ParamsExtractorDB;
 
+  usernameBot?: string;
+  referralLink?: string;
+
   isMsg?: boolean;
   isCmd?: boolean;
   isCallback?: boolean;

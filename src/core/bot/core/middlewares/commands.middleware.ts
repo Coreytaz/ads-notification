@@ -38,17 +38,27 @@ export default async function commands(ctx: Context, next: NextFunction) {
       throw new ErrorBot("Нет прав доступа!", ctx, true);
     }
 
-    const command = ctx.message?.text?.split("@")[0];
+    const text = ctx.message?.text ?? "";
+    const parts = text.trim().split(/\s+/);
+    const [command, usernameBot = ""] = parts[0].split("@");
+    let referralLink = parts.slice(1).join(" ");
+    if (referralLink.startsWith('"') && referralLink.endsWith('"')) {
+      referralLink = referralLink.slice(1, -1);
+    }
+
+    ctx.usernameBot = usernameBot;
+    ctx.referralLink = referralLink;
+
     const pointRoute = ctx.rules["*"];
 
     if (pointRoute) {
       if (pointRoute.route === "*" && pointRoute.enable) {
-        await returnCommandHelper(command!, ctx, next);
+        await returnCommandHelper(command, ctx, next);
         return;
       }
     }
 
-    const rule = ctx.rules[command!];
+    const rule = ctx.rules[command];
 
     if (!rule) {
       throw new ErrorBot("Нет прав доступа!", ctx, true);
@@ -58,7 +68,7 @@ export default async function commands(ctx: Context, next: NextFunction) {
       throw new ErrorBot("Нет прав доступа!", ctx, true);
     }
 
-    await returnCommandHelper(command!, ctx, next);
+    await returnCommandHelper(command, ctx, next);
     return;
   } catch (error) {
     logger.info(error instanceof Error ? error.message : String(error));

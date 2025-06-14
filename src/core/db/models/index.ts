@@ -8,6 +8,7 @@ export * from "./permissions.models";
 export * from "./role.models";
 export * from "./rule.models";
 export * from "./sharedLinks.models";
+export * from "./shareKey.models";
 export * from "./trackedLinks.models";
 export * from "./typeTG.models";
 export * from "./watchLink.models";

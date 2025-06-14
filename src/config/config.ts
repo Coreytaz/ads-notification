@@ -1,4 +1,3 @@
-
 import Joi from "joi";
 
 // All env variables used by the app should be defined in this file.
@@ -16,6 +15,7 @@ const envsSchema = Joi.object()
     PORT: Joi.number().default(8080),
     TG_BOT_TOKEN: Joi.string().required(),
     DB_CONNECT: Joi.string().default("file:local.db"),
+    SECRET_JWT: Joi.string().default("secret"),
   })
   .unknown(true);
 
@@ -37,4 +37,5 @@ export default {
   port: envVars.PORT,
   tgBotToken: envVars.TG_BOT_TOKEN,
   dbConnect: envVars.DB_CONNECT,
+  secretJWT: envVars.SECRET_JWT,
 };

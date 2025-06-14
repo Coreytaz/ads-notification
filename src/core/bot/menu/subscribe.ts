@@ -3,10 +3,10 @@ import { InlineKeyboard } from "grammy";
 import { Context } from "../core/interface/Context";
 import { menuButton } from "./menuButton.config";
 
-export const mainMenu = (ctx: Context) => {
+export const categoriesMenu = (ctx: Context) => {
   const mainMenu = new InlineKeyboard();
 
-  Object.values(menuButton.main).forEach(
+  Object.values(menuButton.subscribe).forEach(
     ({
       data,
       label,
@@ -21,7 +21,7 @@ export const mainMenu = (ctx: Context) => {
         return;
       }
 
-      if (role.includes(ctx.role.name.toLocaleLowerCase())) {
+      if (role.includes(ctx.role.name)) {
         mainMenu.text(label, data).row();
       }
     },

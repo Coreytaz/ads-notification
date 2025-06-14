@@ -1,6 +1,7 @@
-import { relations } from "drizzle-orm";
+import { relations, SQLWrapper } from "drizzle-orm";
 import { int, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
+import { getAll } from "../utils/getAll";
 import { permissionRules } from "./permissionRule.models";
 import { permissions } from "./permissions.models";
 
@@ -15,3 +16,10 @@ export const rulesRelations = relations(rules, ({ many }) => ({
   permissionRules: many(permissionRules),
   permissions: many(permissions),
 }));
+
+export const getAllRules = async (
+  args: Partial<typeof rules.$inferSelect>,
+  ...where: (SQLWrapper | undefined)[]
+) => {
+  return getAll(rules)(args, ...where);
+};

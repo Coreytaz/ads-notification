@@ -35,6 +35,12 @@ export class ParamsExtractorDB extends ParamsExtractor {
     return data;
   }
 
+  toStringDB(optioms?: { route: string }) {
+    const { route = this.route } = optioms ?? {};
+    const id = this.params[this.key_db];
+    return this.toString({ route, params: { [this.key_db]: id } });
+  }
+
   async toStringAsync() {
     const id = await this.createParamDB();
     this.clearParams();

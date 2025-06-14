@@ -3,7 +3,10 @@ import { int, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 import { drizzle } from "../drizzle";
 import { createOne } from "../utils/createOne";
+import { deleteOne } from "../utils/deleteOne";
+import { getOne } from "../utils/getOne";
 import { timestamps } from "../utils/timestamps.helpers";
+import { updateOne } from "../utils/updateOne";
 import { chatTG } from "./chatTG.models";
 import { sharedLinks } from "./sharedLinks.models";
 
@@ -46,4 +49,23 @@ export const createOneTrackedLinks = async (
   args: Omit<typeof trackedLinks.$inferInsert, keyof typeof timestamps>,
 ) => {
   return createOne(trackedLinks)(args);
+};
+
+export const deleteOneTrackedLink = async (
+  where: Partial<(typeof trackedLinks)["$inferSelect"]>,
+) => {
+  return deleteOne(trackedLinks)(where);
+};
+
+export const getOneTrackedLink = async (
+  args: Partial<typeof trackedLinks.$inferSelect>,
+) => {
+  return getOne(trackedLinks)(args);
+};
+
+export const updateOneTrackedLink = async (
+  args: Partial<typeof trackedLinks.$inferInsert>,
+  where: Partial<typeof trackedLinks.$inferSelect>,
+) => {
+  return updateOne(trackedLinks)(args, where);
 };

@@ -24,18 +24,18 @@ export const categoriesSharedList = async (ctx: Context) => {
   );
 
   for (const sharedLink of sharedLinks) {
-    const params = new ParamsExtractorDB(menuButton.detailShared.detail.data);
+    const params = new ParamsExtractorDB(
+      menuButton.categoriesSharedList.detail.data,
+    );
 
     params.addParam("sharedLink", sharedLink.id);
 
+    const title = sharedLink.title || sharedLink.url || "Без названия";
+
     menu
       .text(
-        "ID:" +
-          String(sharedLink.id) +
-          " - (" +
-          String(sharedLink.url.slice(0, 10)) +
-          ")",
-        params.toString(),
+        "ID:" + String(sharedLink.id) + " - (" + String(title) + ")",
+        await params.toStringAsync(),
       )
       .row();
   }

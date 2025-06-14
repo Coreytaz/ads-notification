@@ -46,9 +46,10 @@ export class ParamsExtractor {
     return this.string ? this.string.replace(/{[^}]+}/g, "").trim() : "";
   }
 
-  toString() {
-    let result = this._route;
-    for (const [key, value] of Object.entries(this._params)) {
+  toString(optioms?: { route: string; params?: Record<string, string> }) {
+    const { route = this._route, params = this._params } = optioms ?? {};
+    let result = route;
+    for (const [key, value] of Object.entries(params)) {
       result += `{${key}:${String(value)}}`;
     }
     return result;

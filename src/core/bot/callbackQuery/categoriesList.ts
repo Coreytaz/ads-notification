@@ -27,16 +27,16 @@ export const categoriesList = async (ctx: Context) => {
   );
 
   for (const link of links) {
-    const params = new ParamsExtractorDB(menuButton.detailShared.detail.data);
+    const params = new ParamsExtractorDB(menuButton.categoriesList.detail.data);
 
-    params.addParam("sharedLink", link.id);
+    params.addParam("linkId", link.id);
 
     const title = link.title || link.url || "Без названия";
 
     menu
       .text(
-        "ID:" + String(link.id) + " - (" + String(title.slice(0, 30)) + ")",
-        params.toString(),
+        "ID:" + String(link.id) + " - (" + String(title) + ")",
+        await params.toStringAsync(),
       )
       .row();
   }

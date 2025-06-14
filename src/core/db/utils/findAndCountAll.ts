@@ -1,4 +1,4 @@
-import { and, count, eq } from "drizzle-orm";
+import { and, count, eq, SQLWrapper } from "drizzle-orm";
 import { SQLiteTable } from "drizzle-orm/sqlite-core";
 
 import { drizzle } from "../drizzle";
@@ -7,6 +7,7 @@ export const findAndCountAll = <T extends SQLiteTable>(table: T) => {
   return async (
     args: Partial<T["$inferSelect"]>,
     options: { limit: number; offset: number },
+    ...where: (SQLWrapper | undefined)[]
   ) => {
     return drizzle.transaction(async tx => {
       const data = await tx
@@ -17,6 +18,7 @@ export const findAndCountAll = <T extends SQLiteTable>(table: T) => {
             ...Object.entries(args).map(([key, value]) =>
               eq(table[key as keyof T] as any, value),
             ),
+            ...where,
           ),
         )
         .limit(options.limit)
@@ -31,6 +33,7 @@ export const findAndCountAll = <T extends SQLiteTable>(table: T) => {
             ...Object.entries(args).map(([key, value]) =>
               eq(table[key as keyof T] as any, value),
             ),
+            ...where,
           ),
         )
         .then(res => res[0]?.value ?? 0);

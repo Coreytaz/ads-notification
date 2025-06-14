@@ -2,6 +2,9 @@ import { count, eq, inArray, relations } from "drizzle-orm";
 import { int, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 import { drizzle } from "../drizzle";
+import { createOne } from "../utils/createOne";
+import { deleteOne } from "../utils/deleteOne";
+import { getOne } from "../utils/getOne";
 import { chatTG } from "./chatTG.models";
 import { trackedLinks } from "./trackedLinks.models";
 
@@ -25,6 +28,24 @@ export const sharedLinksRelations = relations(sharedLinks, ({ one }) => ({
     references: [chatTG.chatId],
   }),
 }));
+
+export const getOneSharedLink = async (
+  args: Partial<typeof sharedLinks.$inferSelect>,
+) => {
+  return getOne(sharedLinks)(args);
+};
+
+export const createSharedLink = async (
+  args: typeof sharedLinks.$inferInsert,
+) => {
+  return createOne(sharedLinks)(args);
+};
+
+export const deleteOneSharedLink = async (
+  args: Partial<typeof sharedLinks.$inferSelect>,
+) => {
+  return deleteOne(sharedLinks)(args);
+};
 
 export const getTrackedLinksByChatId = async (
   chatId: string,

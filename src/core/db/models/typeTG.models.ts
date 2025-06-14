@@ -1,7 +1,8 @@
-import { eq } from "drizzle-orm";
+import { eq, type SQLWrapper } from "drizzle-orm";
 import { int, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 import { drizzle } from "../drizzle";
+import { getAll } from "../utils/getAll";
 import { timestamps } from "../utils/timestamps.helpers";
 
 export const ChatType = {
@@ -31,4 +32,11 @@ export const typeTG = sqliteTable("type_tg", {
 
 export const getOneTypeByName = async (name: ChatType) => {
   return drizzle.select().from(typeTG).where(eq(typeTG.name, name)).get();
+};
+
+export const getAllTypeTG = async (
+  args: Partial<typeof typeTG.$inferSelect>,
+  ...where: (SQLWrapper | undefined)[]
+) => {
+  return getAll(typeTG)(args, ...where);
 };
