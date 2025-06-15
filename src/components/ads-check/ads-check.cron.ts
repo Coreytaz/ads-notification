@@ -1,4 +1,10 @@
-import { getAllTrackedLinks, trackedLinks } from "@core/db/models";
+import { messageNotification } from "@components/notification/notification.service";
+import { bot } from "@core/bot/core";
+import {
+  getAllSharedLinks,
+  getAllTrackedLinks,
+  trackedLinks,
+} from "@core/db/models";
 import { browser as _browser } from "@core/puppeteer";
 import logger from "@core/utils/logger";
 import { CronJob, CronTime } from "cron";
@@ -76,7 +82,23 @@ class CronManager {
   private async executeJob(id: (typeof trackedLinks.$inferSelect)["id"]) {
     try {
       const config = this.configs[id];
-      await adsCheck(config);
+      const newsAds = await adsCheck(config);
+      const sharedLinks = await getAllSharedLinks({ trackedLinkId: id });
+
+      const idsNotification = [
+        config.chatId,
+        ...sharedLinks.map(link => link.chatId),
+      ];
+
+      for (const newAds of newsAds) {
+        for (const chatId of idsNotification) {
+          const msg = messageNotification(config, newAds);
+
+          await bot.api.sendMessage(chatId, msg.text, {
+            entities: msg.entities,
+          });
+        }
+      }
     } catch (error) {
       if (error instanceof Error) {
         const browser = _browser.GetBrowserInstance();

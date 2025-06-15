@@ -1,6 +1,5 @@
 import config from "@config/config";
-import { drizzle } from "@core/db";
-import { chatTG } from "@core/db/models";
+import { chatTG, getAllChatTg } from "@core/db/models";
 import logger from "@core/utils/logger";
 import { FormattedString } from "@grammyjs/parse-mode";
 import { eq } from "drizzle-orm";
@@ -16,10 +15,7 @@ class LoggerTG {
     message: string | FormattedString,
     _other?: Other<"sendMessage", "chat_id" | "text">,
   ) {
-    const chats = await drizzle
-      .select()
-      .from(chatTG)
-      .where(eq(chatTG.roleId, 1));
+    const chats = await getAllChatTg({}, eq(chatTG.roleId, 1));
 
     const fmtMessage = createMsg(type, message);
 

@@ -1,4 +1,4 @@
-import { getTrackedLinksByChatId } from "@core/db/models";
+import { findAndCountAllTrackedLinksByChatId } from "@core/db/models";
 import { InlineKeyboard } from "grammy";
 
 import { Context } from "../core/interface/Context";
@@ -15,7 +15,7 @@ export const categoriesSharedList = async (ctx: Context) => {
 
   const { data, label } = menuButton.categoriesSharedList.back;
 
-  const { data: sharedLinks, total: count } = await getTrackedLinksByChatId(
+  const { data: sharedLinks, total: count } = await findAndCountAllTrackedLinksByChatId(
     String(ctx.chat?.id),
     {
       offset: (page - 1) * limit,

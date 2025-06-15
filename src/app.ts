@@ -54,7 +54,7 @@ jobCleanOldChatReplyEditTG.start();
 //
 
 // cron manager
-// void cronManagerAds.init();
+void cronManagerAds.init();
 //
 
 export default app;

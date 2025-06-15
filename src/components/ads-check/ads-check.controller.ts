@@ -20,7 +20,9 @@ export const adsCheck = async (config: typeof trackedLinks.$inferSelect) => {
 
   const includedAds = await checkIncludedLinks(ads, config);
 
-  return await createLinks(includedAds, config);
+  const newsAds = await createLinks(includedAds, config);
+
+  return newsAds;
 };
 
 const adsCheckGet = async (req: Request, res: Response, next: NextFunction) => {

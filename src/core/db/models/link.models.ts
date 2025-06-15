@@ -37,6 +37,6 @@ export const reduceIds = <T extends { id: number }>(links: T[]): Record<string, 
   }, {});
 };
 
-export const getLinkIds = (linkIds: number[]) => {
+export const getLinkByIds = (linkIds: number[]) => {
   return drizzle.select().from(link).where(inArray(link.id, linkIds)).all();
 };

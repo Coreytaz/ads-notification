@@ -449,7 +449,7 @@ const checkIncludedLinks = async (
 const createLinks = async (
   ads: AdsCheck[],
   config: typeof trackedLinks.$inferSelect,
-) => {
+): Promise<(typeof link.$inferSelect)[]> => {
   if (ads.length === 0) return [];
 
   const { id } = config;
@@ -470,9 +470,7 @@ const createLinks = async (
     trackedLinkId: id,
   })) as (typeof link.$inferInsert)[];
 
-  await drizzle.insert(link).values(links);
-
-  return links;
+  return await drizzle.insert(link).values(links).returning();
 };
 
 export { checkAds, checkIncludedLinks, createLinks, generateHash, openPage };

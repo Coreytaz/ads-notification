@@ -6,6 +6,7 @@ import { getOne } from "../utils/getOne";
 import { timestamps } from "../utils/timestamps.helpers";
 import { updateOne } from "../utils/updateOne";
 import { role } from "./role.models";
+import { getAll } from "../utils/getAll";
 
 export const chatTG = sqliteTable("chat_tg", {
   id: int().primaryKey({ autoIncrement: true }),
@@ -39,4 +40,11 @@ export const updateOneChatTG = async <T extends typeof chatTG>(
   ...rest: (SQLWrapper | undefined)[]
 ) => {
   return updateOne(chatTG)(args, where, ...rest);
+};
+
+export const getAllChatTg = async <T extends typeof chatTG>(
+  args: Partial<T["$inferSelect"]>,
+  ...rest: (SQLWrapper | undefined)[]
+) => {
+  return getAll(chatTG)(args, ...rest);
 };
