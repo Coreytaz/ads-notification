@@ -4,45 +4,51 @@ import { drizzle } from "../drizzle";
 import { rules } from "../models";
 
 const initialData: string[] = [
-  "*",
-  "/start",
-  "/id",
-  "/menu",
-  "/reset",
-  "main/categories",
-  "main/system",
-  "main/subscribe",
-  "browser/back",
-  "browser/toggle",
-  "roleUsers/changeRoleEnd",
-  "roleUsers/changeRole",
-  "roleUsers/user",
-  "roleUsers/back",
-  "system/browser",
-  "system/roleUsers",
-  "system/back",
-  "subscribe/create",
-  "subscribe/list",
-  "subscribe/back",
-  "categories/add",
-  "categories/list",
-  "categories/sharedList",
-  "categories/back",
-  "shared/back",
-  "sharedDetail/create",
-  "sharedDetail/back",
-  "editCron/back",
-  "editUrl/back",
-  "detailList/shared",
-  "detailList/editCron",
-  "detailList/editUrl",
-  "detailList/back",
-  "detailList/edit",
-  "detailList/delete",
-  "categoriesSharedList/back",
-  "categories/add/back",
-  "detailShared/detail",
-  "categoriesList/back",
+  ...new Set([
+    "*",
+    "/start",
+    "/id",
+    "/menu",
+    "/reset",
+    "main/categories",
+    "main/system",
+    "main/subscribe",
+    "browser/back",
+    "browser/toggle",
+    "roleUsers/changeRoleEnd",
+    "roleUsers/changeRole",
+    "roleUsers/user",
+    "roleUsers/back",
+    "system/browser",
+    "system/roleUsers",
+    "system/back",
+    "subscribe/create",
+    "subscribe/list",
+    "subscribe/back",
+    "categories/add",
+    "categories/list",
+    "categories/sharedList",
+    "categories/back",
+    "shared/back",
+    "sharedDetail/create",
+    "sharedDetail/back",
+    "editCron/back",
+    "editUrl/back",
+    "detailList/shared",
+    "detailList/editCron",
+    "detailList/editUrl",
+    "detailList/back",
+    "detailList/edit",
+    "detailList/delete",
+    "detailList/detail",
+    "detailList/back",
+    "detailShared/unsubcribe",
+    "detailShared/back",
+    "categoriesSharedList/back",
+    "categories/add/back",
+    "detailShared/detail",
+    "categoriesList/back",
+  ]),
 ];
 
 export default async function seedDefaultConfig() {
@@ -54,9 +60,14 @@ export default async function seedDefaultConfig() {
       return;
     }
 
-    for (const config of initialData) {
-      await drizzle.insert(rules).values({ route: config }).run();
-    }
+    await drizzle
+      .insert(rules)
+      .values(
+        initialData.map(config => ({
+          route: config,
+        })),
+      )
+      .run();
 
     logger.info("Role seeded successfully!");
   } catch (error) {

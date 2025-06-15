@@ -1,3 +1,4 @@
+import { cronControllerAds } from "@components/ads-check/ads-check.cron";
 import { updateOneTrackedLink } from "@core/db/models";
 import { InlineKeyboard, type NextFunction } from "grammy";
 
@@ -72,7 +73,9 @@ export const detailListEditCron = async (ctx: Context, next: NextFunction) => {
       {
         id: Number(linkId),
       },
-    );
+    ).then(config => {
+      cronControllerAds.changeCron(config.id, value);
+    });
 
     await ctx.step.toggleStep(false);
     return detailListDetail(ctx);

@@ -17,14 +17,85 @@ const idCommand = {
   },
 };
 
-const guestRules = Object.assign({}, idCommand, {
+const resetCommand = {
+  "/reset": {
+    enable: true,
+  },
+};
+
+const startCommand = {
   "/start": {
     enable: true,
   },
-});
+};
+
+const guestRules = Object.assign({}, idCommand, resetCommand, startCommand);
 
 const userRules = Object.assign({}, guestRules, {
   "/menu": {
+    enable: true,
+  },
+  "main/categories": {
+    enable: true,
+  },
+  "categories/back": {
+    enable: true,
+  },
+  "categories/add": {
+    enable: true,
+  },
+  "categories/add/back": {
+    enable: true,
+  },
+  "categories/list": {
+    enable: true,
+  },
+  "categoriesList/back": {
+    enable: true,
+  },
+  "categories/sharedList": {
+    enable: true,
+  },
+  "detailList/detail": {
+    enable: true,
+  },
+  "detailList/back": {
+    enable: true,
+  },
+  "detailList/editUrl": {
+    enable: true,
+  },
+  "editUrl/back": {
+    enable: true,
+  },
+  "detailList/editCron": {
+    enable: true,
+  },
+  "detailList/shared": {
+    enable: true,
+  },
+  "detailList/delete": {
+    enable: true,
+  },
+  "sharedDetail/create": {
+    enable: true,
+  },
+  "sharedDetail/back": {
+    enable: true,
+  },
+  "shared/back": {
+    enable: true,
+  },
+  "detailShared/detail": {
+    enable: true,
+  },
+  "detailShared/unsubcribe": {
+    enable: true,
+  },
+  "detailShared/back": {
+    enable: true,
+  },
+  "categoriesSharedList/back": {
     enable: true,
   },
 });
@@ -88,7 +159,7 @@ const generatePermissions = (
   const permission_rules: { permissionId: number; ruleId: any }[] = [];
   const permissions: Record<
     string,
-    { chatType: number; roleId: any; chatId: any; enable: number }
+    { id: number; chatType: number; roleId: any; chatId: any; enable: number }
   > = {};
   let count = 1;
   Object.entries(config).forEach(([chatType, value]) => {
@@ -98,6 +169,7 @@ const generatePermissions = (
         if (roleValue.enable) {
           const key = genKey(chatType, role);
           permissions[key] ??= {
+            id: count,
             chatType: type[chatType],
             roleId: roles[role],
             chatId: null,
@@ -175,20 +247,16 @@ export default async function seedDefaultConfig() {
 
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (!roles || !rules) {
-      console.log(`Roles or rules not found, skipping seeder.`);
+      logger.info(`Roles or rules not found, skipping seeder.`);
       return;
     }
 
     const { permissions: permissionsData, permission_rules } =
       generatePermissions(initPermissionConfig, roles, rules, type);
 
-    for (const permissionData of permissionsData) {
-      await drizzle.insert(permissions).values(permissionData).run();
-    }
+    await drizzle.insert(permissions).values(permissionsData).run();
 
-    for (const permission_rule of permission_rules) {
-      await drizzle.insert(permissionRules).values(permission_rule).run();
-    }
+    await drizzle.insert(permissionRules).values(permission_rules).run();
 
     logger.info("Role seeded successfully!");
   } catch (error) {

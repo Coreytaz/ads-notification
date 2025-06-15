@@ -46,6 +46,8 @@ export default async function callbackQuery(ctx: Context, next: NextFunction) {
     const route = params.route;
     const pointRoute = ctx.rules["*"];
 
+    console.log("route", route);
+
     if (pointRoute) {
       if (pointRoute.route === "*" && pointRoute.enable) {
         await returnCallbackQueryHelper(route, ctx, next);

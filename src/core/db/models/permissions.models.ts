@@ -38,8 +38,8 @@ export const permissionsRelations = relations(permissions, ({ one, many }) => ({
 }));
 
 export const getAllPermissions = async (
-  args: Partial<typeof role.$inferSelect>,
+  args: Partial<typeof permissions.$inferSelect>,
   ...where: (SQLWrapper | undefined)[]
 ) => {
-  return getAll(role)(args, ...where);
+  return getAll(permissions)(args, ...where);
 };

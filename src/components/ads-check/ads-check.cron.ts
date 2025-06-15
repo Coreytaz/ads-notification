@@ -1,9 +1,7 @@
-import { drizzle } from "@core/db";
 import { getAllTrackedLinks, trackedLinks } from "@core/db/models";
 import { browser as _browser } from "@core/puppeteer";
 import logger from "@core/utils/logger";
 import { CronJob, CronTime } from "cron";
-import { eq } from "drizzle-orm";
 
 import { adsCheck } from "./ads-check.controller";
 
@@ -11,18 +9,25 @@ type JobStore = Record<number, CronJob>;
 
 class CronManager {
   private jobs: JobStore = {};
+  private configs: Record<number, typeof trackedLinks.$inferSelect> = {};
   private timeZone = "Europe/Moscow";
 
   public async init() {
     const configs = await getAllTrackedLinks();
     configs.forEach(config => {
-      this.addJob(config);
+      const id = config.id;
+      this.setConfig(config);
+      this.addJob(id);
     });
   }
 
-  public addJob(config: typeof trackedLinks.$inferSelect) {
+  public setConfig(configs: typeof trackedLinks.$inferSelect) {
+    this.configs[configs.id] = configs;
+  }
+
+  public addJob(id: (typeof trackedLinks.$inferSelect)["id"]) {
     try {
-      const id = config.id;
+      const config = this.configs[id];
 
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (this.jobs[id]) {
@@ -31,7 +36,7 @@ class CronManager {
 
       const job = new CronJob(
         config.cronTime,
-        () => this.executeJob(config),
+        () => this.executeJob(id),
         null,
         Boolean(config.enable) || false,
         this.timeZone,
@@ -68,8 +73,9 @@ class CronManager {
     }
   }
 
-  private async executeJob(config: typeof trackedLinks.$inferSelect) {
+  private async executeJob(id: (typeof trackedLinks.$inferSelect)["id"]) {
     try {
+      const config = this.configs[id];
       await adsCheck(config);
     } catch (error) {
       if (error instanceof Error) {
@@ -85,29 +91,27 @@ class CronManager {
   }
 }
 
-export const cronManager = new CronManager();
+export const cronManagerAds = new CronManager();
 
-export const searchConfigsController = {
-  async toggle(id: number, value: number) {
-    await drizzle
-      .update(trackedLinks)
-      .set({ enable: value })
-      .where(eq(trackedLinks.id, id));
-
-    await cronManager.toggle(id, Boolean(value));
+export const cronControllerAds = {
+  addJob(config: typeof trackedLinks.$inferSelect) {
+    cronManagerAds.setConfig(config);
+    cronManagerAds.addJob(config.id);
   },
 
-  async changeCron(id: number, value: string) {
-    await drizzle
-      .update(trackedLinks)
-      .set({ cronTime: value })
-      .where(eq(trackedLinks.id, id));
+  changeConfig(config: typeof trackedLinks.$inferSelect) {
+    cronManagerAds.setConfig(config);
+  },
 
-    cronManager.setTime(id, value);
+  async toggle(id: number, value: number) {
+    await cronManagerAds.toggle(id, Boolean(value));
+  },
+
+  changeCron(id: number, value: string) {
+    cronManagerAds.setTime(id, value);
   },
 
   async delete(id: number) {
-    await drizzle.delete(trackedLinks).where(eq(trackedLinks.id, id));
-    await cronManager.removeJob(id);
+    await cronManagerAds.removeJob(id);
   },
 };

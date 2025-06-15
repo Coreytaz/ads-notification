@@ -46,8 +46,8 @@ class Browser {
     page.on("request", req => {
       if (
         req.resourceType() == "font" ||
-        req.resourceType() == "image" ||
-        req.resourceType() == "stylesheet"
+        req.resourceType() == "image"
+        // || req.resourceType() == "stylesheet"
       ) {
         void req.abort();
       } else {

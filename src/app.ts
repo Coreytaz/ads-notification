@@ -1,4 +1,5 @@
 import http404 from "@components/404/404.router";
+import { cronManagerAds } from "@components/ads-check/ads-check.cron";
 import consts from "@config/consts";
 import { runBot } from "@core/bot/bot";
 import { jobCleanOldChatReplyEditTG } from "@core/cron/jobCleanOldChatReplyEditTG";
@@ -50,6 +51,10 @@ void runBot();
 jobCleanOldParamTG.start();
 jobToggleOldStepTG.start();
 jobCleanOldChatReplyEditTG.start();
+//
+
+// cron manager
+// void cronManagerAds.init();
 //
 
 export default app;

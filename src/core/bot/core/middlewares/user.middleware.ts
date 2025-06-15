@@ -33,7 +33,7 @@ export default async function userCheck(ctx: Context, next: NextFunction) {
           chatId: String(ctx.chatId),
           name:
             ctx.chat?.title ?? ctx.chat?.username ?? ctx.chat?.first_name ?? "",
-          roleId: 2,
+          roleId: 3,
         };
 
         const newChat = await tx
@@ -45,7 +45,7 @@ export default async function userCheck(ctx: Context, next: NextFunction) {
         const newRole = await tx
           .select()
           .from(_role)
-          .where(eq(_role.id, 2))
+          .where(eq(_role.id, 3))
           .get();
 
         return {

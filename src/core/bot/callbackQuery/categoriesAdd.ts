@@ -1,3 +1,4 @@
+import { cronControllerAds } from "@components/ads-check/ads-check.cron";
 import { createOneTrackedLinks } from "@core/db/models";
 import { mapping } from "@core/utils/mapping";
 import { InlineKeyboard, type NextFunction } from "grammy";
@@ -88,7 +89,7 @@ const mapStep: Record<
 
       const newTrackedLink = await createOneTrackedLinks({
         url: msg,
-        title: newParams.params?.title ?? msg.slice(-15) ?? "Без названия",
+        title: newParams.params?.title ?? msg ?? "Без названия",
         // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain, @typescript-eslint/no-non-null-assertion
         chatId: String(ctx.chat?.id!),
         cronTime: "*/10 * * * *",
@@ -109,6 +110,8 @@ const mapStep: Record<
         });
         return;
       }
+
+      cronControllerAds.addJob(newTrackedLink);
 
       await ctx.editAndReply.reply(
         `Категория успешно создана\n${separator}\nЗаголовок: ${newTrackedLink.title}\nСсылка на категорию: ${newTrackedLink.url}`,
