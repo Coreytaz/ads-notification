@@ -111,8 +111,6 @@ const editAndReplyContext = (
 };
 
 export default async function editAndReply(ctx: Context, next: NextFunction) {
-  console.log(123);
-
   ctx.editAndReply = editAndReplyContext(ctx);
   await next();
 }

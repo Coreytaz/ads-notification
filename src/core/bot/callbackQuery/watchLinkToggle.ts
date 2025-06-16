@@ -26,9 +26,7 @@ export const watchLinkToggle = async (ctx: Context) => {
         linkId: Number(linkId),
         chatId: String(ctx.from?.id),
       },
-    ).then(async config => {
-      // await cronControllerAds.toggle(config);
-    });
+    );
   }
   if (toggle === "false") {
     await updateOneWatchLink(
@@ -40,9 +38,7 @@ export const watchLinkToggle = async (ctx: Context) => {
         linkId: Number(linkId),
         chatId: String(ctx.from?.id),
       },
-    ).then(async config => {
-      // await cronControllerAds.toggle(config);
-    });
+    );
   }
 
   const watchLink = await getOneWatchLink({

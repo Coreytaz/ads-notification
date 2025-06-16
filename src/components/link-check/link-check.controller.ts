@@ -1,4 +1,8 @@
-import { getAllEnableWatchLink, getLinkByIds, reduceIds } from "@core/db/models";
+import {
+  getAllEnableWatchLink,
+  getLinkByIds,
+  reduceIds,
+} from "@core/db/models";
 import { browser as _browser } from "@core/puppeteer";
 import AppError from "@core/utils/appError";
 import { groupBy } from "@core/utils/groupBy";
@@ -12,7 +16,7 @@ import {
   updateLinks,
 } from "./link-check.service";
 
-const linkCheck = async () => {
+export const linkCheck = async () => {
   const watchLinks = await getAllEnableWatchLink();
 
   const idsLink = [...new Set(watchLinks.map(link => link.linkId))];
@@ -29,9 +33,9 @@ const linkCheck = async () => {
 
   const groupWatchChatId = groupBy(watchLinks, "chatId");
 
-  sendNotifications(groupWatchChatId, linksReduce);
+  await sendNotifications(reduceIds(links), groupWatchChatId, linksReduce);
 
-  return { mapLinks, linksReduce, groupWatchChatId };
+  return { links, mapLinks, linksReduce, groupWatchChatId };
 };
 
 const linkCheckGet = async (

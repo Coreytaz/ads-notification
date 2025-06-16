@@ -1,6 +1,7 @@
 import http404 from "@components/404/404.router";
 import { cronManagerAds } from "@components/ads-check/ads-check.cron";
-import consts from "@config/consts";
+import { jobLinkCheck } from "@components/link-check/link-check.cron";
+// import consts from "@config/consts";
 import { runBot } from "@core/bot/bot";
 import { jobCleanOldChatReplyEditTG } from "@core/cron/jobCleanOldChatReplyEditTG";
 import { jobCleanOldParamTG } from "@core/cron/jobCleanOldParamTG";
@@ -13,7 +14,7 @@ import cors from "cors";
 import express, { Application } from "express";
 import httpContext from "express-http-context";
 
-import api from "./api";
+// import api from "./api";
 
 const app: Application = express();
 
@@ -22,7 +23,7 @@ app.use(httpLogger.successHandler);
 app.use(httpLogger.errorHandler);
 app.use(uniqueReqId);
 
-app.use(consts.API_ROOT_PATH_V1, api);
+// app.use(consts.API_ROOT_PATH_V1, api);
 
 app.use(http404);
 
@@ -51,6 +52,7 @@ void runBot();
 jobCleanOldParamTG.start();
 jobToggleOldStepTG.start();
 jobCleanOldChatReplyEditTG.start();
+jobLinkCheck.start();
 //
 
 // cron manager

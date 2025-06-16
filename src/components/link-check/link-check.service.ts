@@ -1,12 +1,19 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { sendMessage } from "@components/notification/notification.service";
+import { ParamsExtractorDB } from "@core/bot/core/utils/paramsExractorDB";
+import { menuButton } from "@core/bot/menu/menuButton.config";
 import { drizzle } from "@core/db";
-import { link } from "@core/db/models";
+import { link as linkDB } from "@core/db/models";
 import { browser } from "@core/puppeteer";
+import { CompositeKeyMap } from "@core/utils/CompositeKeyMap";
 import { convertPriceToNumber } from "@core/utils/convertPriceToNumber";
 import type { GroupedResult } from "@core/utils/groupBy";
 import { isHouseNumber } from "@core/utils/isHouseNumber";
 import logger from "@core/utils/logger";
 import { removeAddressKeywords } from "@core/utils/removeAddressKeywords";
+import { bold, fmt, link as fmtLink } from "@grammyjs/parse-mode";
 import { eq } from "drizzle-orm";
+import { InlineKeyboard } from "grammy";
 
 import {
   ComparisonResult,
@@ -52,7 +59,7 @@ function compareObjects<
   return result;
 }
 
-const linkCian = async (config: typeof link.$inferSelect) => {
+const linkCian = async (config: typeof linkDB.$inferSelect) => {
   const page = await browser.CreatePage();
 
   if (!config.url) {
@@ -289,7 +296,7 @@ const mapAds = {
   cian: linkCian,
 };
 
-const checkNewInfo = async (links: (typeof link.$inferSelect)[]) => {
+const checkNewInfo = async (links: (typeof linkDB.$inferSelect)[]) => {
   const newLinksIds: LinkCheckData[] = [];
 
   for (const linkItem of links) {
@@ -345,29 +352,111 @@ const mapLinkCheckData = (linkData: LinkCheckData): LinkMapResult => {
 const updateLinks = async (links: LinkMapResult[]): Promise<void> => {
   await drizzle.transaction(async tx => {
     for (const itemLink of links) {
-      await tx.update(link).set(itemLink).where(eq(link.id, itemLink.id));
+      await tx.update(linkDB).set(itemLink).where(eq(linkDB.id, itemLink.id));
     }
   });
 };
 
-const sendNotifications = (
+const sendNotifications = async (
+  resorceLinks: Record<string, typeof linkDB.$inferSelect>,
   chatsId: GroupedResult<{
     id: number;
     linkId: number;
-    chatId: number;
+    chatId: string;
     enable: number;
   }>,
   links: Record<string, LinkMapResult>,
 ) => {
-  Object.entries(chatsId).forEach(([chatId, watchLink]) => {
-    const idsLink = watchLink.map(item => item.linkId);
+  for (const [chatId, watchLinks] of Object.entries(chatsId)) {
+    const idsLink = watchLinks.map(item => item.linkId);
     const linksToNotify = idsLink.map(id => links[id]).filter(Boolean);
-    sendNotification(linksToNotify, chatId);
+    const linkMap = new CompositeKeyMap(watchLinks, ["linkId", "chatId"]);
+
+    for (const link of linksToNotify) {
+      const watchlink = linkMap.get({
+        linkId: link.id,
+        chatId,
+        id: undefined,
+        enable: undefined,
+      });
+
+      await sendNotification(resorceLinks[link.id], link, chatId, watchlink);
+    }
+  }
+};
+
+const sendNotification = async (
+  resorceLinks: typeof linkDB.$inferSelect,
+  link: LinkMapResult,
+  chatId: string,
+  watchLink:
+    | {
+        id: number;
+        linkId: number;
+        chatId: string;
+        enable: number;
+      }
+    | undefined,
+) => {
+  const active = watchLink?.enable ?? false;
+
+  const status = active ? "🔕" : "🔔";
+
+  const msg = messageNotification(resorceLinks, link);
+
+  const menu = new InlineKeyboard();
+
+  const params = new ParamsExtractorDB(menuButton.watchLink.toggle.data);
+
+  params.addParams({
+    linkId: link.id,
+    watchLinkId: watchLink?.id,
+    toggle: watchLink ? (active ? "false" : "true") : undefined,
+  });
+
+  menu.text(
+    `${status} ${active ? "Не отслеживать" : "Отслеживать"}`,
+    await params.toStringAsync(),
+  );
+
+  await sendMessage(chatId, msg.text, {
+    entities: msg.entities,
+    reply_markup: menu,
   });
 };
 
-const sendNotification = (links: LinkMapResult[], chatId: string) => {
-  console.log(`Sending notification to chat ${chatId} with links:`, links);
+const messageNotification = (
+  config: typeof linkDB.$inferSelect,
+  newConfig: LinkMapResult,
+) => {
+  const description =
+    newConfig.small_description ?? config.small_description ?? "";
+  const msg = fmt`Данное объявление поменялось
+
+${config.title ? fmt`🏠 ${newConfig.title ?? config.title},` : ""} ${bold(newConfig.square ?? config.square!)}
+${config.price ? fmt`💵 ${Number(newConfig.price ?? config.price).toLocaleString("ru-RU", { style: "currency", currency: "RUB", minimumFractionDigits: 0, maximumFractionDigits: 0 })} ${newConfig.price && newConfig.price > config.price ? "⬆️" : "⬇️"}` : ""}
+🌎 Ул. ${newConfig.address ?? config.address!}, ${fmt`дом ${newConfig.house ?? config.house!}`}
+${fmt`👤 Продавец - ${bold(newConfig.seller_name ?? config.seller_name!)}`}
+${fmt`🪜 Этаж - ${bold(config.floor! + " / " + config.floor_count!)}`}
+${fmt`\n${description.length > 255 ? description.slice(0, 255) + "..." : description}`}
+
+⌚️${
+    config.date_published
+      ? fmt`Добавлено ${new Date(config.date_published).toLocaleString(
+          "ru-RU",
+          {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+          },
+        )} по МСК`
+      : ""
+  }
+${config.url ? fmt`🔗${fmtLink("Ссылка на объявление", config.url)}` : ""}
+  `;
+  return msg;
 };
 
 export { checkNewInfo, mapLinkCheckData, sendNotifications, updateLinks };
