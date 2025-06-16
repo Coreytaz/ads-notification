@@ -6,6 +6,7 @@ import { objectToText } from "../core/utils/objectToText";
 import { menuButton } from "../menu/menuButton.config";
 
 const mapCron = {
+  "*/1 * * * *": "каждую 1 минуту",
   "*/5 * * * *": "каждые 5 минут",
   "*/10 * * * *": "каждые 10 минут",
   "*/30 * * * *": "каждые 30 минут",

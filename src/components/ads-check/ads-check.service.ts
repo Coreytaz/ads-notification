@@ -278,6 +278,10 @@ const itemAdsCian = async (
                   replace: "$1$2$3",
                 },
                 {
+                  regex: /(^|\s)(\p{L}+)\sкв-л(\s|$|,|\.)/giu,
+                  replace: "$1$2$3",
+                },
+                {
                   regex: /(^|\s)(\p{L}+)\sмикрорайон(\s|$|,|\.)/giu,
                   replace: "$1$2$3",
                 },

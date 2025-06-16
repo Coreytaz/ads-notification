@@ -5,7 +5,7 @@ import { drizzle } from "../drizzle";
 
 export const getAll = <T extends SQLiteTable>(table: T) => {
   return async (
-    args: Partial<T["$inferSelect"]>,
+    args?: Partial<T["$inferSelect"]>,
     ...rest: (SQLWrapper | undefined)[]
   ) => {
     return drizzle
@@ -13,7 +13,7 @@ export const getAll = <T extends SQLiteTable>(table: T) => {
       .from(table)
       .where(
         and(
-          ...Object.entries(args).map(([key, value]) =>
+          ...Object.entries(args ?? {}).map(([key, value]) =>
             eq(table[key as keyof T] as any, value),
           ),
           ...rest,

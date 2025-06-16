@@ -1,7 +1,9 @@
 import crypto from "crypto";
+import { SQLWrapper } from "drizzle-orm";
 import { int, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 import { createOne } from "../utils/createOne";
+import { deleteOne } from "../utils/deleteOne";
 import { getOne } from "../utils/getOne";
 import { timestamps } from "../utils/timestamps.helpers";
 import { trackedLinks } from "./trackedLinks.models";
@@ -41,4 +43,11 @@ export const getOneShareKey = async (
   args: Partial<typeof shareKey.$inferSelect>,
 ) => {
   return getOne(shareKey)(args);
+};
+
+export const deleteShareKey = async (
+  args: Partial<typeof shareKey.$inferSelect>,
+  ...rest: (SQLWrapper | undefined)[]
+) => {
+  return deleteOne(shareKey)(args, ...rest);
 };

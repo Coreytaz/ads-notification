@@ -5,22 +5,23 @@ const messageNotification = (
   config: typeof trackedLinks.$inferSelect,
   link: typeof linkDB.$inferSelect,
 ) => {
-  const msg = fmt`По вашей категории${config.title ? ` "${config.title}" ` : " "}найдено новое объявление ${link.title ? fmt`${bold(link.title)}, ` : ""}${link.square ? fmt`${bold(link.square)}` : ""}
+  const msg = fmt`По вашей категории${config.title ? ` "${config.title}" ` : " "}найдено новое объявление
+
+${link.title ? fmt`🏠 ${bold(link.title)}, ` : ""}${link.square ? fmt`${bold(link.square)}` : ""}
 ${
   link.price
     ? fmt`💵 ${Number(link.price).toLocaleString("ru-RU", {
         style: "currency",
         currency: "RUB",
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
       })}`
     : ""
 }
-🌎${link.address ? fmt` ул. ${link.address}, ` : ""}${link.house ? fmt`дом ${link.house}` : ""}
-👤${link.seller_name ? fmt` Продавец ${link.seller_name}` : ""}
-🪜${link.floor && link.floor_count ? fmt` Этаж ${bold(link.floor + " / " + link.floor_count)}` : ""}
-
-${link.small_description ? fmt`${link.small_description.length > 255 ? link.small_description.slice(0, 255) + "..." : link.small_description}` : ""}
+${link.address ? fmt`🌎 Ул. ${link.address}, ` : ""}${link.house ? fmt`дом ${link.house}` : ""}
+${link.seller_name ? fmt`👤 Продавец - ${link.seller_name}` : ""}
+${link.floor && link.floor_count ? fmt`🪜 Этаж - ${bold(link.floor + " / " + link.floor_count)}` : ""}
+${link.small_description ? fmt`\n${link.small_description.length > 255 ? link.small_description.slice(0, 255) + "..." : link.small_description}` : ""}
 
 ⌚️${
     link.created_at

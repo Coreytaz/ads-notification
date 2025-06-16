@@ -1,22 +1,25 @@
-import { getTrackedLinkById } from "@core/db/models";
 import { InlineKeyboard } from "grammy";
 
 import { Context } from "../core/interface/Context";
 import { menuButton } from "../menu/menuButton.config";
 
 export const detailListShared = async (ctx: Context) => {
-  const params = ctx.paramsExtractor?.params ?? {};
-  const linkId = params.linkId as string;
-
   const menu = new InlineKeyboard();
-
-  const link = await getTrackedLinkById(Number(linkId));
 
   menu
     .text(
       menuButton.sharedDetail.create.label,
       ctx.paramsExtractor?.toStringDB({
         route: menuButton.sharedDetail.create.data,
+      }),
+    )
+    .row();
+
+  menu
+    .text(
+      menuButton.sharedDetail.delete.label,
+      ctx.paramsExtractor?.toStringDB({
+        route: menuButton.sharedDetail.delete.data,
       }),
     )
     .row();

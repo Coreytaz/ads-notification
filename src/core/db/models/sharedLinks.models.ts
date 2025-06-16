@@ -49,10 +49,11 @@ export const createSharedLink = async (
   return createOne(sharedLinks)(args);
 };
 
-export const deleteOneSharedLink = async (
+export const deleteSharedLink = async (
   args: Partial<typeof sharedLinks.$inferSelect>,
+  ...rest: (SQLWrapper | undefined)[]
 ) => {
-  return deleteOne(sharedLinks)(args);
+  return deleteOne(sharedLinks)(args, ...rest);
 };
 
 export const findAndCountAllTrackedLinksByChatId = async (

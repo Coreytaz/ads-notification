@@ -10,12 +10,18 @@ import { menuButton } from "../menu/menuButton.config";
 import { detailListDetail } from "./detailListDetail";
 
 const mapCron = {
+  "каждую 1 минуту": "*/1 * * * *",
   "каждые 5 минут": "*/5 * * * *",
   "каждые 10 минут": "*/10 * * * *",
   "каждые 30 минут": "*/30 * * * *",
 };
 
-const avabledCron = ["каждые 5 минут", "каждые 10 минут", "каждые 30 минут"];
+const avabledCron = [
+  "каждую 1 минуту",
+  "каждые 5 минут",
+  "каждые 10 минут",
+  "каждые 30 минут",
+];
 
 const exampleCronMsg = (cron: string, index: number) => {
   return `${index + 1}. \`${cron}\``;

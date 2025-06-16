@@ -19,7 +19,7 @@ class CronManager {
   private timeZone = "Europe/Moscow";
 
   public async init() {
-    const configs = await getAllTrackedLinks();
+    const configs = await getAllTrackedLinks({ enable: 1 });
     configs.forEach(config => {
       const id = config.id;
       this.setConfig(config);
@@ -65,8 +65,13 @@ class CronManager {
 
   public async toggle(id: number, value: boolean) {
     const job = this.jobs[id];
-    if (value) job.start();
-    else await job.stop();
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (job) {
+      if (value) job.start();
+      else await job.stop();
+    } else {
+      this.addJob(id);
+    }
   }
 
   public async removeJob(id: number) {
@@ -125,8 +130,9 @@ export const cronControllerAds = {
     cronManagerAds.setConfig(config);
   },
 
-  async toggle(id: number, value: number) {
-    await cronManagerAds.toggle(id, Boolean(value));
+  async toggle(config: typeof trackedLinks.$inferSelect) {
+    cronManagerAds.setConfig(config);
+    await cronManagerAds.toggle(config.id, Boolean(config.enable));
   },
 
   changeCron(id: number, value: string) {

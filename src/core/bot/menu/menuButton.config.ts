@@ -60,15 +60,23 @@ export const menuButton = {
       data: "sharedDetail/create",
       label: "Создать ссылку на приглашение",
     },
+    delete: {
+      data: "sharedDetail/delete",
+      label: "Удалить доступ к категории",
+    },
     back: { data: "sharedDetail/back", label: "Назад" },
   },
   detailList: {
     shared: { data: "detailList/shared", label: "Поделиться / Общий доступ" },
-    // edit: { data: "detailList/edit", label: "Редактировать категорию" },
+    editTitle: {
+      data: "detailList/editTitle",
+      label: "Изменить название",
+    },
     editCron: {
       data: "detailList/editCron",
       label: "Изменить время запуска",
     },
+    toggle: { data: "detailList/toggle" },
     editUrl: { data: "detailList/editUrl", label: "Изменить ссылку" },
     delete: { data: "detailList/delete", label: "Удалить категорию" },
     back: { data: "detailList/back", label: "Назад" },

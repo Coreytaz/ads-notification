@@ -7,6 +7,7 @@ import { categoriesSharedList } from "./categoriesSharedList";
 import { detailListDelete } from "./detailListDelete";
 import { detailListDetail } from "./detailListDetail";
 import { detailListEditCron } from "./detailListEditCron";
+import { detailListEditTitle } from "./detailListEditTitle";
 import { detailListEditUrl } from "./detailListEditUrl";
 import { detailListShared } from "./detailListShared";
 import { detailSharedDetail } from "./detailSharedDetail";
@@ -18,6 +19,7 @@ import { roleUsersChangeRole } from "./roleUsersChangeRole";
 import { roleUsersChangeRoleEnd } from "./roleUsersChangeRoleEnd";
 import { roleUsersUser } from "./roleUsersUser";
 import { sharedDetailCreate } from "./sharedDetailCreate";
+import { sharedDetailDelete } from "./sharedDetailDelete";
 import { systemBrowser } from "./systemBrowser";
 import { systemRoleUsers } from "./systemRoleUsers";
 
@@ -36,10 +38,13 @@ export default {
   "detailList/shared": detailListShared,
   "detailList/editUrl": detailListEditUrl,
   "detailList/editCron": detailListEditCron,
+  "detailList/editTitle": detailListEditTitle,
+  "detailList/toggle": detailListDetail,
   "detailShared/detail": detailSharedDetail,
   "detailShared/back": categoriesSharedList,
   "sharedDetail/back": detailListDetail,
   "sharedDetail/create": sharedDetailCreate,
+  "sharedDetail/delete": sharedDetailDelete,
   "shared/back": detailListShared,
   "editUrl/back": detailListDetail,
   "detailShared/unsubcribe": detailSharedUnsubcribe,

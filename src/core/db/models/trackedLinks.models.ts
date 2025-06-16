@@ -1,9 +1,10 @@
-import { eq, relations } from "drizzle-orm";
+import { eq, relations, SQLWrapper } from "drizzle-orm";
 import { int, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 import { drizzle } from "../drizzle";
 import { createOne } from "../utils/createOne";
 import { deleteOne } from "../utils/deleteOne";
+import { getAll } from "../utils/getAll";
 import { getOne } from "../utils/getOne";
 import { timestamps } from "../utils/timestamps.helpers";
 import { updateOne } from "../utils/updateOne";
@@ -22,8 +23,11 @@ export const trackedLinks = sqliteTable("tracked_links", {
   ...timestamps,
 });
 
-export const getAllTrackedLinks = () => {
-  return drizzle.select().from(trackedLinks).all();
+export const getAllTrackedLinks = (
+  args?: Partial<(typeof trackedLinks)["$inferSelect"]>,
+  ...rest: (SQLWrapper | undefined)[]
+) => {
+  return getAll(trackedLinks)(args, ...rest);
 };
 
 export const getTrackedLinkById = (id: number) => {

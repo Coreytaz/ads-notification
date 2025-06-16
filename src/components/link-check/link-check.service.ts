@@ -183,6 +183,10 @@ const linkCian = async (config: typeof link.$inferSelect) => {
                   regex: /(^|\s)(\p{L}+)\sнаб.\.?(\s|$|,|\.)/giu,
                   replace: "$1$2$3",
                 },
+                {
+                  regex: /(^|\s)(\p{L}+)\sквартал.\.?(\s|$|,|\.)/giu,
+                  replace: "$1$2$3",
+                },
               ])
             : null,
         )
