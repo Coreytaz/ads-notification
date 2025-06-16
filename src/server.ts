@@ -2,6 +2,8 @@ import { Server } from "node:http";
 
 import app from "@app";
 import config from "@config/config";
+import { stopBot } from "@core/bot";
+import { loggerTG } from "@core/bot/core/utils/logger";
 import errorHandler from "@core/utils/errorHandler";
 import logger from "@core/utils/logger";
 
@@ -12,9 +14,11 @@ const server: Server = app.listen(port, (): void => {
 });
 
 const exitHandler = (): void => {
-  server.close(() => {
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+  server.close(async () => {
+    await loggerTG.error("Server closed");
+    await stopBot();
     logger.info("Server closed");
-     
     process.exit(1);
   });
 };
