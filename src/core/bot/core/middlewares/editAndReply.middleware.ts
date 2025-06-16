@@ -71,10 +71,48 @@ const editAndReplyContext = (
       );
       return editedMessage as Message.TextMessage;
     },
+    editMessageReplyMarkup: async options => {
+      const replyMsg = await find(ctx);
+
+      if (isEmpty(replyMsg)) {
+        const message = await ctx.reply("", options);
+        await create(ctx, message.message_id);
+        return { ...message, edit_date: message.date };
+      }
+
+      const editedMessage = await ctx.api.editMessageReplyMarkup(
+        Number(ctx.chat?.id),
+        Number(replyMsg?.messageId),
+        options,
+      );
+      return editedMessage;
+    },
+    sendMessage: async (text, options) => {
+      const replyMsg = await find(ctx);
+
+      if (isEmpty(replyMsg)) {
+        const message = await ctx.api.sendMessage(
+          Number(ctx.chat?.id),
+          text,
+          options,
+        );
+        await create(ctx, message.message_id);
+        return message;
+      }
+
+      const sentMessage = await ctx.api.sendMessage(
+        Number(ctx.chat?.id),
+        text,
+        options,
+      );
+      return sentMessage;
+    },
   };
 };
 
 export default async function editAndReply(ctx: Context, next: NextFunction) {
+  console.log(123);
+
   ctx.editAndReply = editAndReplyContext(ctx);
   await next();
 }

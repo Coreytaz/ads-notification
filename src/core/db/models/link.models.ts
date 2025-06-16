@@ -7,7 +7,9 @@ import { trackedLinks } from "./trackedLinks.models";
 
 export const link = sqliteTable("link", {
   id: int("id").primaryKey({ autoIncrement: true }),
-  trackedLinkId: int("tracked_link_id").references(() => trackedLinks.id),
+  trackedLinkId: int("tracked_link_id").references(() => trackedLinks.id, {
+    onDelete: "cascade",
+  }),
   url: text("url"),
   title: text("title"),
   price: text("price"),
@@ -30,7 +32,9 @@ export const linkRelations = relations(link, ({ one }) => ({
   }),
 }));
 
-export const reduceIds = <T extends { id: number }>(links: T[]): Record<string, T> => {
+export const reduceIds = <T extends { id: number }>(
+  links: T[],
+): Record<string, T> => {
   return links.reduce<Record<string, T>>((acc, link) => {
     acc[String(link.id)] = link;
     return acc;

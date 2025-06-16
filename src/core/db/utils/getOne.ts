@@ -19,6 +19,7 @@ export const getOne = <T extends SQLiteTable>(table: T) => {
           ...rest,
         ),
       )
+      .limit(1)
       .get();
   };
 };

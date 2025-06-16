@@ -22,6 +22,7 @@ import { sharedDetailCreate } from "./sharedDetailCreate";
 import { sharedDetailDelete } from "./sharedDetailDelete";
 import { systemBrowser } from "./systemBrowser";
 import { systemRoleUsers } from "./systemRoleUsers";
+import { watchLinkToggle } from "./watchLinkToggle";
 
 export default {
   "main/categories": mainCategories,
@@ -57,4 +58,5 @@ export default {
   "roleUsers/changeRole": roleUsersChangeRole,
   "roleUsers/changeRoleEnd": roleUsersChangeRoleEnd,
   "browser/back": mainSystem,
+  "watchLink/toggle": watchLinkToggle,
 } as Record<string, (ctx: Context, next: NextFunction) => Promise<void>>;

@@ -10,6 +10,8 @@ import { Context } from "../core/interface/Context";
 import { separator } from "../core/utils/separator";
 import { menuButton } from "../menu/menuButton.config";
 
+const KEY_REF = "shared_url";
+
 export const sharedDetailCreate = async (ctx: Context) => {
   const params = ctx.paramsExtractor?.params ?? {};
   const linkId = params.linkId as string;
@@ -29,7 +31,7 @@ export const sharedDetailCreate = async (ctx: Context) => {
 
   const token = shareKey.key;
 
-  const url = `https://t.me/${ctx.me.username}?start=shared_url=${token}`;
+  const url = `https://t.me/${ctx.me.username}?start=${KEY_REF}=${token}`;
 
   const { data, label } = menuButton.shared.back;
 

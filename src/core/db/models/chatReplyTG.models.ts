@@ -10,7 +10,7 @@ export const chatReplyTG = sqliteTable("chat_reply_tg", {
   messageId: int("message_id").notNull().unique(),
   chatId: text("chat_id")
     .notNull()
-    .references(() => chatTG.chatId),
+    .references(() => chatTG.chatId, { onDelete: "cascade" }),
   ...timestamps,
 });
 

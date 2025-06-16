@@ -18,7 +18,7 @@ export const trackedLinks = sqliteTable("tracked_links", {
   title: text("title").notNull().default(""),
   cronTime: text("cron_time").notNull(),
   chatId: text("chat_id")
-    .references(() => chatTG.chatId)
+    .references(() => chatTG.chatId, { onDelete: "cascade" })
     .notNull(),
   ...timestamps,
 });

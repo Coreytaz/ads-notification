@@ -2,11 +2,11 @@ import { sql, type SQLWrapper } from "drizzle-orm";
 import { int, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 import { findAndCountAll } from "../utils/findAndCountAll";
+import { getAll } from "../utils/getAll";
 import { getOne } from "../utils/getOne";
 import { timestamps } from "../utils/timestamps.helpers";
 import { updateOne } from "../utils/updateOne";
 import { role } from "./role.models";
-import { getAll } from "../utils/getAll";
 
 export const chatTG = sqliteTable("chat_tg", {
   id: int().primaryKey({ autoIncrement: true }),

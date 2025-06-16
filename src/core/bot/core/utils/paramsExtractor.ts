@@ -55,8 +55,9 @@ export class ParamsExtractor {
     return result;
   }
 
-  addParams(params: Record<string, string | number | boolean>) {
+  addParams(params: Record<string, string | number | boolean | undefined>) {
     for (const [key, value] of Object.entries(params)) {
+      if (value === undefined) continue;
       this.addParam(key, value);
     }
   }

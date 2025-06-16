@@ -1,4 +1,4 @@
-import crypto from "crypto";
+import { generateAlphanumericKey } from "@core/utils/generateAlphanumericKey";
 import { SQLWrapper } from "drizzle-orm";
 import { int, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
@@ -8,22 +8,12 @@ import { getOne } from "../utils/getOne";
 import { timestamps } from "../utils/timestamps.helpers";
 import { trackedLinks } from "./trackedLinks.models";
 
-function generateAlphanumericKey(length = 32) {
-  const chars =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let key = "";
-  const randomBytes = crypto.randomBytes(length);
-  for (let i = 0; i < length; i++) {
-    const index = randomBytes[i] % chars.length;
-    key += chars[index];
-  }
-  return key;
-}
-
 export const shareKey = sqliteTable("share_key", {
   id: int("id").primaryKey({ autoIncrement: true }),
   trackedLinkId: int("tracked_link_id")
-    .references(() => trackedLinks.id)
+    .references(() => trackedLinks.id, {
+      onDelete: "cascade",
+    })
     .unique()
     .notNull(),
   key: text("key", { length: 32 })

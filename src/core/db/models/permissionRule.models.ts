@@ -8,10 +8,10 @@ import { rules } from "./rule.models";
 export const permissionRules = sqliteTable("permission_rules", {
   permissionId: int("permission_id")
     .notNull()
-    .references(() => permissions.id),
+    .references(() => permissions.id, { onDelete: "cascade" }),
   ruleId: int("rule_id")
     .notNull()
-    .references(() => rules.id),
+    .references(() => rules.id, { onDelete: "cascade" }),
 });
 
 export const permissionRulesRelations = relations(

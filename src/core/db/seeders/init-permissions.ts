@@ -77,7 +77,16 @@ const userRules = Object.assign({}, guestRules, {
   "detailList/delete": {
     enable: true,
   },
+  "detailList/toggle": {
+    enable: true,
+  },
+  "detailList/editTitle": {
+    enable: true,
+  },
   "sharedDetail/create": {
+    enable: true,
+  },
+  "sharedDetail/delete": {
     enable: true,
   },
   "sharedDetail/back": {
@@ -96,6 +105,9 @@ const userRules = Object.assign({}, guestRules, {
     enable: true,
   },
   "categoriesSharedList/back": {
+    enable: true,
+  },
+  "watchLink/toggle": {
     enable: true,
   },
 });

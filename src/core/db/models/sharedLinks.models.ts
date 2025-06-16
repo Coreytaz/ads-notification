@@ -12,10 +12,10 @@ import { trackedLinks } from "./trackedLinks.models";
 export const sharedLinks = sqliteTable("shared_links", {
   id: int("id").primaryKey({ autoIncrement: true }),
   trackedLinkId: int("tracked_link_id")
-    .references(() => trackedLinks.id)
+    .references(() => trackedLinks.id, { onDelete: "cascade" })
     .notNull(),
   chatId: text("chat_id")
-    .references(() => chatTG.chatId)
+    .references(() => chatTG.chatId, { onDelete: "cascade" })
     .notNull(),
 });
 

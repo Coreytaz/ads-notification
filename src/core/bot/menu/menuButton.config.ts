@@ -102,4 +102,7 @@ export const menuButton = {
     detail: { data: "detailList/detail" },
     back: { data: "categoriesList/back", label: "Назад" },
   },
+  watchLink: {
+    toggle: { data: "watchLink/toggle" },
+  },
 };

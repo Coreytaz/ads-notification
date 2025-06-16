@@ -1,13 +1,22 @@
-import { messageNotification } from "@components/notification/notification.service";
-import { bot } from "@core/bot/core";
+import {
+  messageNotification,
+  sendMessage,
+} from "@components/notification/notification.service";
+import { ParamsExtractorDB } from "@core/bot/core/utils/paramsExractorDB";
+import { menuButton } from "@core/bot/menu/menuButton.config";
 import {
   getAllSharedLinks,
   getAllTrackedLinks,
+  getAllWatchLink,
   trackedLinks,
+  watchLink,
 } from "@core/db/models";
 import { browser as _browser } from "@core/puppeteer";
+import { CompositeKeyMap } from "@core/utils/CompositeKeyMap";
 import logger from "@core/utils/logger";
 import { CronJob, CronTime } from "cron";
+import { inArray } from "drizzle-orm";
+import { InlineKeyboard } from "grammy";
 
 import { adsCheck } from "./ads-check.controller";
 
@@ -89,18 +98,57 @@ class CronManager {
       const config = this.configs[id];
       const newsAds = await adsCheck(config);
       const sharedLinks = await getAllSharedLinks({ trackedLinkId: id });
+      const newsIds = newsAds.map(ad => ad.id);
 
       const idsNotification = [
         config.chatId,
         ...sharedLinks.map(link => link.chatId),
       ];
 
-      for (const newAds of newsAds) {
-        for (const chatId of idsNotification) {
+      const watchLinks = await getAllWatchLink(
+        {},
+        inArray(watchLink.linkId, newsIds),
+        inArray(watchLink.chatId, idsNotification),
+      );
+
+      const linkMap = new CompositeKeyMap(watchLinks, ["linkId", "chatId"]);
+
+      for (const chatId of idsNotification) {
+        for (const newAds of newsAds) {
+          const linkId = newAds.id;
+
+          const watchLink = linkMap.get({
+            linkId,
+            chatId,
+            id: undefined,
+            enable: undefined,
+          });
+
+          const active = watchLink?.enable ?? false;
+
+          const status = active ? "🔕" : "🔔";
+
           const msg = messageNotification(config, newAds);
 
-          await bot.api.sendMessage(chatId, msg.text, {
+          const menu = new InlineKeyboard();
+
+          const params = new ParamsExtractorDB(
+            menuButton.watchLink.toggle.data,
+          );
+
+          params.addParams({
+            linkId,
+            toggle: watchLink ? (active ? "false" : "true") : undefined,
+          });
+
+          menu.text(
+            `${status} ${active ? "Не отслеживать" : "Отслеживать"}`,
+            await params.toStringAsync(),
+          );
+
+          await sendMessage(chatId, msg.text, {
             entities: msg.entities,
+            reply_markup: menu,
           });
         }
       }

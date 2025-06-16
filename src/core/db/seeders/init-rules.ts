@@ -44,10 +44,14 @@ const initialData: string[] = [
     "detailList/back",
     "detailShared/unsubcribe",
     "detailShared/back",
+    "sharedDetail/delete",
     "categoriesSharedList/back",
     "categories/add/back",
     "detailShared/detail",
     "categoriesList/back",
+    "detailList/toggle",
+    "detailList/editTitle",
+    "watchLink/toggle",
   ]),
 ];
 
