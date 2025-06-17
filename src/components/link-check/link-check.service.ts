@@ -14,6 +14,7 @@ import { removeAddressKeywords } from "@core/utils/removeAddressKeywords";
 import { bold, fmt, link as fmtLink } from "@grammyjs/parse-mode";
 import { eq } from "drizzle-orm";
 import { InlineKeyboard } from "grammy";
+import { DateTime } from "luxon";
 
 import {
   ComparisonResult,
@@ -442,16 +443,16 @@ ${fmt`\n${description.length > 255 ? description.slice(0, 255) + "..." : descrip
 
 ⌚️${
     config.date_published
-      ? fmt`Добавлено ${new Date(config.date_published).toLocaleString(
-          "ru-RU",
-          {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
-          },
-        )} по МСК`
+      ? fmt`Добавлено ${DateTime.fromSQL(config.date_published, {
+          setZone: true,
+          locale: "ru-RU",
+        }).toLocaleString({
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+        })} по МСК`
       : ""
   }
 ${config.url ? fmt`🔗${fmtLink("Ссылка на объявление", config.url)}` : ""}

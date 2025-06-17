@@ -37,6 +37,7 @@ ${link.small_description ? fmt`\n${link.small_description.length > 255 ? link.sm
     link.date_published
       ? fmt`Добавлено ${DateTime.fromSQL(link.date_published, {
           setZone: true,
+          locale: "ru-RU",
         }).toLocaleString({
           year: "numeric",
           month: "2-digit",
