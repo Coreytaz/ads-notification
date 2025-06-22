@@ -14,7 +14,7 @@ class Browser {
   private readonly TIMEOUT: number;
   private readonly USER_AGENT = "INSERT_USERAGENT";
 
-  constructor(_timeout = 15000) {
+  constructor(_timeout = 5000) {
     this.TIMEOUT = _timeout;
   }
 
