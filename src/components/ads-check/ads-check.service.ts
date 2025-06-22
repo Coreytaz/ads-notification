@@ -202,7 +202,7 @@ const itemAdsCian = async (
     : [null, null];
 
   const smallDescription = await item
-    .waitForSelector('div[data-name="Description"]>p', { timeout: 30000 })
+    .waitForSelector('div[data-name="Description"]>p')
     .then(el => el?.evaluate(el => el.textContent) ?? null)
     .catch((e: unknown) => {
       logger.info(e);
